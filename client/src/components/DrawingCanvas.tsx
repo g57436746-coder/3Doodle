@@ -97,6 +97,11 @@ const DrawingCanvas = ({
       };
     };
 
+    const getCanvasScale = () => {
+      const rect = canvas.getBoundingClientRect();
+      return rect.width > 0 ? canvas.width / rect.width : 1;
+    };
+
     const fillCanvas = () => {
       context.fillStyle = currentColor;
       context.fillRect(0, 0, canvas.width, canvas.height);
@@ -123,7 +128,7 @@ const DrawingCanvas = ({
 
       context.lineJoin = "round";
       context.lineCap = "round";
-      context.lineWidth = brushSize * (canvas.width / rect.width);
+      context.lineWidth = brushSize * getCanvasScale();
       context.strokeStyle = currentTool === "eraser" ? CANVAS_BACKGROUND : currentColor;
 
       context.beginPath();
