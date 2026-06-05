@@ -26,6 +26,48 @@ import { compressImage } from "@/lib/imageUtils";
 import type { GalleryItem } from "@shared/schema";
 
 const drawingIdeas = ["Apple", "Cat", "Rocket", "Flower", "House", "Dog", "Sun", "Tree"];
+const GENERATION_POLL_INTERVAL_MS = 4000;
+const GENERATION_POLL_ATTEMPTS = 90;
+
+type GenerationStartResponse =
+  | GalleryItem
+  | {
+      jobId: string;
+      status: "processing";
+    };
+
+type GenerationJobResponse = {
+  status: "processing" | "complete" | "failed";
+  galleryItem?: GalleryItem;
+  message?: string;
+};
+
+function wait(ms: number) {
+  return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+function isGenerationJob(value: GenerationStartResponse): value is Extract<GenerationStartResponse, { jobId: string }> {
+  return "jobId" in value;
+}
+
+async function pollGenerationJob(jobId: string): Promise<GalleryItem> {
+  for (let attempt = 0; attempt < GENERATION_POLL_ATTEMPTS; attempt += 1) {
+    await wait(attempt === 0 ? 1500 : GENERATION_POLL_INTERVAL_MS);
+
+    const response = await apiRequest("GET", `/api/generate/${encodeURIComponent(jobId)}`);
+    const job = await response.json() as GenerationJobResponse;
+
+    if (job.status === "complete" && job.galleryItem) {
+      return job.galleryItem;
+    }
+
+    if (job.status === "failed") {
+      throw new Error(job.message || "Riverflow generation failed. Please try again.");
+    }
+  }
+
+  throw new Error("Riverflow is still working. Please try again in a moment.");
+}
 
 const DrawingApp = () => {
   const { toast } = useToast();
@@ -88,12 +130,16 @@ const DrawingApp = () => {
         imageData,
       });
 
-      const result = await response.json();
-      setGalleryItems((prev) => [result, ...prev]);
+      const result = await response.json() as GenerationStartResponse;
+      const galleryItem = response.status === 202 && isGenerationJob(result)
+        ? await pollGenerationJob(result.jobId)
+        : result as GalleryItem;
+
+      setGalleryItems((prev) => [galleryItem, ...prev]);
 
       toast({
         title: "3D image generated!",
-        description: `Your ${result.objectType} has been created!`,
+        description: `Your ${galleryItem.objectType} has been created!`,
       });
 
       window.setTimeout(() => {
@@ -160,23 +206,23 @@ const DrawingApp = () => {
     <div className="mobile-drawing-viewport overflow-x-hidden bg-[#bdf4ff] text-[#23244d] studio-pattern">
       <header className="sticky top-0 z-30 border-b-4 border-white bg-[#bdf4ff]/92 px-2 py-1.5 backdrop-blur sm:px-5 sm:py-3 lg:px-8">
         <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-3">
-          <div className="flex min-w-0 items-center gap-3">
+          <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
             <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[0.95rem] bg-[#ff477e] text-white shadow-[0_4px_0_rgba(35,36,77,0.14)] sm:h-12 sm:w-12 sm:rounded-[1.1rem] sm:shadow-[0_6px_0_rgba(35,36,77,0.14)]">
               <Sparkles className="h-4 w-4 sm:h-6 sm:w-6" aria-hidden="true" />
             </div>
             <div className="min-w-0">
-              <h1 className="truncate font-nunito text-lg font-black leading-none text-[#23244d] sm:text-3xl">
+              <h1 className="truncate font-nunito text-base font-black leading-none text-[#23244d] sm:text-3xl">
                 3Doodle
               </h1>
               <p className="hidden text-xs font-bold text-[#52607e] sm:block">Toy studio</p>
             </div>
           </div>
 
-          <nav className="flex items-center gap-2">
+          <nav className="flex shrink-0 items-center gap-1.5 sm:gap-2">
             <button
               type="button"
               onClick={handleNewDoodle}
-              className="toy-icon-button bg-[#fffdf7] text-[#23244d] sm:w-auto sm:px-4"
+              className="toy-icon-button h-10 w-10 rounded-[0.9rem] bg-[#fffdf7] text-[#23244d] sm:h-12 sm:w-auto sm:rounded-2xl sm:px-4"
               aria-label="New doodle"
               title="New doodle"
             >
@@ -186,7 +232,7 @@ const DrawingApp = () => {
             <button
               type="button"
               onClick={handleGalleryJump}
-              className="toy-icon-button bg-[#fffdf7] text-[#23244d] sm:w-auto sm:px-4"
+              className="toy-icon-button h-10 w-10 rounded-[0.9rem] bg-[#fffdf7] text-[#23244d] sm:h-12 sm:w-auto sm:rounded-2xl sm:px-4"
               aria-label="Go to gallery"
               title="Go to gallery"
             >
@@ -196,7 +242,7 @@ const DrawingApp = () => {
             <button
               type="button"
               onClick={() => setIsHelpModalOpen(true)}
-              className="toy-icon-button bg-[#fffdf7] text-[#23244d] sm:w-auto sm:px-4"
+              className="toy-icon-button hidden bg-[#fffdf7] text-[#23244d] sm:inline-flex sm:w-auto sm:px-4"
               aria-label="Open help"
               title="Open help"
             >
