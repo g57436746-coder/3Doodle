@@ -112,20 +112,25 @@ const LandingPage = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-5 xl:col-span-6 flex items-center justify-center relative min-h-[320px] sm:min-h-[400px] lg:min-h-[460px]"
+            className="lg:col-span-5 xl:col-span-6 flex items-center justify-center relative min-h-[320px] sm:min-h-[400px] lg:min-h-[460px] overflow-visible"
           >
-            {/* Whiteboard/Canvas Toy Frame */}
-            <div className="w-full max-w-[540px] rounded-[2.5rem] border-[12px] border-white bg-white shadow-[0_24px_50px_rgba(24,31,76,0.16)] overflow-hidden relative rotate-[2deg] hover:rotate-0 transition-transform duration-300">
+            {/* Contained Hero Illustration with original crop and style */}
+            <div className="w-full max-w-[500px] xl:max-w-[550px] aspect-square relative select-none pointer-events-none">
               <img
                 src={doodleHero}
                 alt="Children drawing colorful 3Doodle art"
-                className="w-full h-auto object-cover select-none pointer-events-none"
+                className="w-full h-full object-cover object-[50%_62%] opacity-[0.92] scale-105"
+                style={{ clipPath: "inset(23% 0 16% 0)" }}
               />
-              {/* Toy label/badge on the whiteboard frame */}
-              <div className="absolute top-3 right-3 bg-[#fff3b0] text-[#ff477e] border-2 border-white px-3 py-1.5 rounded-full font-nunito text-xs font-black rotate-[6deg] shadow-md flex items-center gap-1">
-                <Images className="h-3.5 w-3.5" />
-                Gallery ready!
-              </div>
+            </div>
+
+            {/* Playful badge aligned to the bottom right of the hero container */}
+            <div
+              className="absolute bottom-6 right-0 z-10 hidden rotate-[-7deg] items-center gap-2 rounded-[1.25rem] border-4 border-white bg-[#fffdf7] px-4 py-3 font-nunito font-black text-[#23244d] shadow-[0_8px_0_rgba(35,36,77,0.12)] md:flex"
+              aria-hidden="true"
+            >
+              <Images className="h-5 w-5 text-[#ff477e]" />
+              Gallery ready
             </div>
             
             {/* Small hand-drawn decoration accents */}
