@@ -41,7 +41,8 @@ const LandingPage = () => {
         <img
           src={doodleHero}
           alt="Children drawing colorful 3Doodle art"
-          className="pointer-events-none absolute bottom-[-7rem] right-[-14rem] h-[70svh] min-h-[520px] max-w-none select-none object-cover object-[50%_62%] opacity-80 sm:right-[-9rem] sm:h-[78svh] lg:right-[-3rem] lg:h-[86svh] xl:right-8"
+          className="pointer-events-none absolute bottom-[-7rem] right-[-14rem] h-[70svh] min-h-[520px] max-w-none select-none object-cover object-[50%_62%] opacity-[0.82] sm:right-[-9rem] sm:h-[78svh] lg:right-[-3rem] lg:h-[86svh] xl:right-8"
+          style={{ clipPath: "inset(23% 0 16% 0)" }}
         />
         <div className="absolute inset-x-0 bottom-0 h-32 bg-[#fff7d7]" aria-hidden="true" />
         <div className="absolute bottom-10 left-0 right-0 h-8 bg-[#15b8c6]" aria-hidden="true" />

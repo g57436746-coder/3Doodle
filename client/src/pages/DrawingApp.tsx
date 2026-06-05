@@ -1,23 +1,36 @@
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from "react";
+import {
+  CircleHelp,
+  FilePlus2,
+  Images,
+  Lightbulb,
+  Loader2,
+  RotateCcw,
+  Sparkles,
+  WandSparkles,
+} from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import DrawingCanvas from '@/components/DrawingCanvas';
-import ColorPicker from '@/components/ColorPicker';
-import BrushSizeControl from '@/components/BrushSizeControl';
-import ToolSelector from '@/components/ToolSelector';
-import Gallery from '@/components/Gallery';
-import HelpModal from '@/components/HelpModal';
-import ProcessingIndicator from '@/components/ProcessingIndicator';
-import ChatPanel from '@/components/ChatPanel';
-import { useDrawing } from '@/hooks/useDrawing';
-import { apiRequest } from '@/lib/queryClient';
-import { GalleryItem } from '../../../shared/schema';
+import DrawingCanvas from "@/components/DrawingCanvas";
+import ColorPicker, { COLORS } from "@/components/ColorPicker";
+import BrushSizeControl from "@/components/BrushSizeControl";
+import ToolSelector, { TOOLS } from "@/components/ToolSelector";
+import Gallery from "@/components/Gallery";
+import HelpModal from "@/components/HelpModal";
+import ProcessingIndicator from "@/components/ProcessingIndicator";
+import ChatPanel from "@/components/ChatPanel";
+import { useDrawing } from "@/hooks/useDrawing";
+import { apiRequest } from "@/lib/queryClient";
+import { cn } from "@/lib/utils";
+import type { GalleryItem } from "@shared/schema";
+
+const drawingIdeas = ["Apple", "Cat", "Rocket", "Flower", "House", "Dog", "Sun", "Tree"];
 
 const DrawingApp = () => {
   const { toast } = useToast();
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
-  
+
   const {
     canvasRef,
     currentTool,
@@ -29,7 +42,7 @@ const DrawingApp = () => {
     setBrushSize,
     isDrawn,
     setIsDrawn,
-    getCanvasImage
+    getCanvasImage,
   } = useDrawing();
 
   const handleNewDoodle = () => {
@@ -40,38 +53,37 @@ const DrawingApp = () => {
     if (!isDrawn) {
       toast({
         title: "Canvas is empty",
-        description: "Please draw something first!",
-        variant: "destructive"
+        description: "Draw something first, then make it 3D!",
+        variant: "destructive",
       });
       return;
     }
 
     try {
       setIsProcessing(true);
-      
-      // Get the image data from canvas
+
       const imageData = getCanvasImage();
-      
-      // Send image to server for processing with OpenRouter
-      const response = await apiRequest('POST', '/api/generate', {
+      const response = await apiRequest("POST", "/api/generate", {
         imageData,
       });
-      
+
       const result = await response.json();
-      
-      // Add new item to gallery
-      setGalleryItems(prev => [result, ...prev]);
-      
+      setGalleryItems((prev) => [result, ...prev]);
+
       toast({
         title: "3D image generated!",
         description: `Your ${result.objectType} has been created!`,
       });
+
+      window.setTimeout(() => {
+        document.getElementById("gallery")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 100);
     } catch (error) {
       console.error("Error generating image:", error);
       toast({
         title: "Generation failed",
-        description: "Couldn't transform your drawing. Please try again!",
-        variant: "destructive"
+        description: "Could not transform your drawing. Please try again!",
+        variant: "destructive",
       });
     } finally {
       setIsProcessing(false);
@@ -79,18 +91,21 @@ const DrawingApp = () => {
   };
 
   const handleDeleteGalleryItem = (id: string) => {
-    setGalleryItems(prev => prev.filter(item => item.id !== id));
+    setGalleryItems((prev) => prev.filter((item) => item.id !== id));
   };
 
   const handleClearGallery = () => {
     setGalleryItems([]);
   };
 
-  // Fetch existing gallery items on component mount
+  const handleGalleryJump = () => {
+    document.getElementById("gallery")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
   useEffect(() => {
     const fetchGalleryItems = async () => {
       try {
-        const response = await fetch('/api/gallery');
+        const response = await fetch("/api/gallery");
         if (response.ok) {
           const items = await response.json();
           setGalleryItems(items);
@@ -103,51 +118,77 @@ const DrawingApp = () => {
     fetchGalleryItems();
   }, []);
 
-  return (
-    <div className="relative overflow-hidden min-h-screen">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80')] bg-cover opacity-10 filter blur-5 -z-10"></div>
-      <div className="absolute top-0 right-0 h-96 w-96 bg-primary-light rounded-full filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/2"></div>
-      <div className="absolute bottom-0 left-0 h-96 w-96 bg-pink-200 rounded-full filter blur-3xl opacity-20 translate-y-1/2 -translate-x-1/2"></div>
+  const generateLabel = isProcessing ? "Making..." : "Generate 3D";
 
-      <div className="container mx-auto px-4 py-8 relative z-10">
-        <header className="flex flex-col md:flex-row justify-between items-center mb-6">
-          <div className="flex items-center mb-4 md:mb-0">
-            <h1 className="font-nunito font-bold text-2xl md:text-3xl text-primary-600 flex items-center">
-              <span className="mr-2">3Doodle</span>
-              <i className="ri-magic-line text-pink-500 animate-pulse"></i>
-            </h1>
+  return (
+    <div className="min-h-screen overflow-x-hidden bg-[#bdf4ff] text-[#23244d] studio-pattern">
+      <header className="sticky top-0 z-30 border-b-4 border-white bg-[#bdf4ff]/92 px-3 py-3 backdrop-blur sm:px-5 lg:px-8">
+        <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-3">
+          <div className="flex min-w-0 items-center gap-3">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.1rem] bg-[#ff477e] text-white shadow-[0_6px_0_rgba(35,36,77,0.14)]">
+              <Sparkles className="h-6 w-6" aria-hidden="true" />
+            </div>
+            <div className="min-w-0">
+              <h1 className="truncate font-nunito text-2xl font-black leading-none text-[#23244d] sm:text-3xl">
+                3Doodle
+              </h1>
+              <p className="hidden text-xs font-bold text-[#52607e] sm:block">Toy studio</p>
+            </div>
           </div>
-          
-          <nav className="flex space-x-4">
+
+          <nav className="flex items-center gap-2">
             <button
+              type="button"
               onClick={handleNewDoodle}
-              className="flex items-center px-4 py-2 bg-primary-100 text-primary-600 rounded-full text-sm hover:bg-primary-200 transition-colors"
+              className="toy-icon-button bg-[#fffdf7] text-[#23244d] sm:w-auto sm:px-4"
+              aria-label="New doodle"
+              title="New doodle"
             >
-              <i className="ri-file-add-line mr-1"></i> New
-            </button>
-            <button className="flex items-center px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm hover:bg-primary-100 hover:text-primary-600 transition-colors">
-              <i className="ri-gallery-line mr-1"></i> Gallery
+              <FilePlus2 className="h-5 w-5" aria-hidden="true" />
+              <span className="hidden font-nunito font-black sm:inline">New</span>
             </button>
             <button
-              onClick={() => setIsHelpModalOpen(true)}
-              className="flex items-center px-4 py-2 bg-gray-100 text-gray-600 rounded-full text-sm hover:bg-primary-100 hover:text-primary-600 transition-colors"
+              type="button"
+              onClick={handleGalleryJump}
+              className="toy-icon-button bg-[#fffdf7] text-[#23244d] sm:w-auto sm:px-4"
+              aria-label="Go to gallery"
+              title="Go to gallery"
             >
-              <i className="ri-question-line mr-1"></i> Help
+              <Images className="h-5 w-5" aria-hidden="true" />
+              <span className="hidden font-nunito font-black sm:inline">Gallery</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsHelpModalOpen(true)}
+              className="toy-icon-button bg-[#fffdf7] text-[#23244d] sm:w-auto sm:px-4"
+              aria-label="Open help"
+              title="Open help"
+            >
+              <CircleHelp className="h-5 w-5" aria-hidden="true" />
+              <span className="hidden font-nunito font-black sm:inline">Help</span>
             </button>
           </nav>
-        </header>
-        
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Drawing Canvas Section */}
-          <div className="lg:col-span-8 bg-white rounded-2xl shadow-lg p-4 relative">
-            <div className="mb-4 flex justify-between items-center">
-              <h2 className="font-nunito font-bold text-xl text-primary-600">Drawing Canvas</h2>
-              <div className="text-gray-600 text-sm">
-                <span>Draw a simple object: apple, banana, dog, cat, flower, etc.</span>
+        </div>
+      </header>
+
+      <main className="mx-auto flex w-full max-w-[1480px] flex-col gap-5 px-3 pb-[calc(14rem+env(safe-area-inset-bottom))] pt-4 sm:px-5 sm:pb-[calc(13rem+env(safe-area-inset-bottom))] lg:px-8 lg:pb-8">
+        <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_390px] xl:grid-cols-[minmax(0,1fr)_420px]">
+          <section className="toy-panel rounded-[2rem] p-3 sm:p-4 lg:p-5">
+            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+              <div>
+                <p className="font-nunito text-sm font-black uppercase tracking-normal text-[#ff477e]">
+                  Canvas first
+                </p>
+                <h2 className="font-nunito text-2xl font-black leading-tight text-[#23244d] sm:text-3xl">
+                  Draw your next 3D doodle
+                </h2>
+              </div>
+              <div className="inline-flex w-fit items-center gap-2 rounded-full bg-[#fff3b0] px-4 py-2 font-nunito text-sm font-black text-[#23244d]">
+                <Lightbulb className="h-4 w-4 text-[#ff8a00]" aria-hidden="true" />
+                Simple outlines work best
               </div>
             </div>
-            
+
             <DrawingCanvas
               canvasRef={canvasRef}
               currentTool={currentTool}
@@ -156,119 +197,189 @@ const DrawingApp = () => {
               isDrawn={isDrawn}
               setIsDrawn={setIsDrawn}
             />
-            
-            <div className="mt-4 flex flex-wrap justify-between gap-4">
-              <div className="flex items-center space-x-3">
-                <button className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-primary-100 hover:text-primary-600 transition-colors">
-                  <i className="ri-arrow-go-back-line"></i>
-                </button>
-                <button
-                  onClick={clearCanvas}
-                  className="p-2 rounded-full bg-gray-100 text-gray-600 hover:bg-primary-100 hover:text-primary-600 transition-colors"
-                >
-                  <i className="ri-eraser-line"></i>
-                </button>
-              </div>
-              
+
+            <div className="mt-5 hidden items-center justify-between gap-4 lg:flex">
               <button
-                onClick={handleGenerateImage}
-                className="flex items-center px-6 py-3 bg-primary-600 text-white rounded-full font-nunito font-bold shadow-md hover:bg-primary-500 transition-colors transform hover:-translate-y-1 hover:shadow-lg"
+                type="button"
+                onClick={clearCanvas}
+                className="toy-button bg-[#fffdf7] text-[#23244d]"
               >
-                <i className="ri-magic-line mr-2"></i>
-                <span>Generate 3D!</span>
+                <RotateCcw className="h-5 w-5 text-[#14b8c4]" aria-hidden="true" />
+                Clear canvas
+              </button>
+
+              <button
+                type="button"
+                onClick={handleGenerateImage}
+                disabled={isProcessing}
+                className="toy-button bg-[#ff477e] px-7 text-lg text-white hover:bg-[#e63b70] disabled:cursor-not-allowed disabled:bg-[#cbd5e1]"
+              >
+                {isProcessing ? (
+                  <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+                ) : (
+                  <WandSparkles className="h-5 w-5" aria-hidden="true" />
+                )}
+                {generateLabel}
               </button>
             </div>
-          </div>
-          
-          <div className="lg:col-span-4 space-y-6">
-            {/* Tools Panel */}
-            <div className="bg-white rounded-2xl shadow-lg p-4">
-              <h2 className="font-nunito font-bold text-lg text-primary-600 mb-4">Drawing Tools</h2>
-              
-              <ColorPicker 
-                currentColor={currentColor}
-                setCurrentColor={setCurrentColor}
-              />
-              
-              <BrushSizeControl 
-                brushSize={brushSize}
-                setBrushSize={setBrushSize}
-              />
-              
-              <ToolSelector 
-                currentTool={currentTool}
-                setCurrentTool={setCurrentTool}
-              />
-              
-              <div>
-                <h3 className="text-sm text-gray-600 mb-2">Try Drawing</h3>
-                <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
-                    <span className="text-sm">Apple</span>
-                  </div>
-                  <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
-                    <span className="text-sm">Cat</span>
-                  </div>
-                  <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
-                    <span className="text-sm">Flower</span>
-                  </div>
-                  <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
-                    <span className="text-sm">House</span>
-                  </div>
-                  <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
-                    <span className="text-sm">Dog</span>
-                  </div>
-                  <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
-                    <span className="text-sm">Car</span>
-                  </div>
-                  <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
-                    <span className="text-sm">Sun</span>
-                  </div>
-                  <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
-                    <span className="text-sm">Tree</span>
-                  </div>
+          </section>
+
+          <aside className="hidden flex-col gap-5 lg:flex">
+            <section className="toy-panel rounded-[1.75rem] p-5">
+              <div className="mb-5 flex items-center gap-3">
+                <div className="flex h-12 w-12 items-center justify-center rounded-[1.1rem] bg-[#14b8c4] text-white shadow-[0_6px_0_rgba(35,36,77,0.15)]">
+                  <Sparkles className="h-5 w-5" aria-hidden="true" />
                 </div>
-                <div className="mt-4 p-3 bg-primary-50 rounded-lg">
-                  <p className="text-xs text-primary-700">
-                    <i className="ri-lightbulb-line mr-1"></i>
-                    <strong>Tip:</strong> Draw a simple outline. The AI is great at recognizing basic shapes!
-                  </p>
+                <div>
+                  <h2 className="font-nunito text-xl font-black text-[#23244d]">Drawing Tools</h2>
+                  <p className="text-xs font-bold text-[#52607e]">Color, brush, fill</p>
                 </div>
               </div>
-            </div>
 
-            <ChatPanel />
-          </div>
-        </div>
-        
-        {/* Generated Images Gallery */}
-        <div className="mt-8 bg-white rounded-2xl shadow-lg p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="font-nunito font-bold text-xl text-primary-600">Your 3D Gallery</h2>
+              <div className="space-y-6">
+                <ColorPicker currentColor={currentColor} setCurrentColor={setCurrentColor} />
+                <BrushSizeControl brushSize={brushSize} setBrushSize={setBrushSize} />
+                <ToolSelector currentTool={currentTool} setCurrentTool={setCurrentTool} />
+
+                <div className="rounded-[1.4rem] bg-[#f1f6ff] p-4">
+                  <h3 className="mb-3 font-nunito text-sm font-black uppercase tracking-normal text-[#52607e]">
+                    Try drawing
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {drawingIdeas.map((idea) => (
+                      <span
+                        key={idea}
+                        className="rounded-full bg-[#fffdf7] px-3 py-2 text-center font-nunito text-sm font-black text-[#23244d]"
+                      >
+                        {idea}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <ChatPanel className="min-h-[360px]" />
+          </aside>
+        </section>
+
+        <section className="grid gap-5 lg:hidden">
+          <ChatPanel />
+        </section>
+
+        <section id="gallery" className="toy-panel scroll-mt-24 rounded-[2rem] p-4 sm:p-5 lg:p-6">
+          <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="font-nunito text-sm font-black uppercase tracking-normal text-[#14b8c4]">
+                Your collection
+              </p>
+              <h2 className="font-nunito text-2xl font-black text-[#23244d]">3D Gallery</h2>
+            </div>
             <button
+              type="button"
               onClick={handleClearGallery}
-              className="flex items-center px-4 py-2 text-sm text-rose-600 hover:bg-rose-50 rounded-full transition-colors"
+              className="toy-button min-h-11 w-fit bg-[#ffe3eb] px-4 py-2 text-sm text-[#b91c4d] disabled:cursor-not-allowed disabled:bg-[#f1f6ff] disabled:text-[#94a3b8]"
               disabled={galleryItems.length === 0}
             >
-              <i className="ri-delete-bin-line mr-1"></i> Clear All
+              <RotateCcw className="h-4 w-4" aria-hidden="true" />
+              Clear all
             </button>
           </div>
-          
-          <Gallery 
-            items={galleryItems}
-            onDelete={handleDeleteGalleryItem}
-          />
+
+          <Gallery items={galleryItems} onDelete={handleDeleteGalleryItem} />
+        </section>
+      </main>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t-4 border-white bg-[#fffdf7]/96 px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-3 shadow-[0_-18px_42px_rgba(35,36,77,0.18)] backdrop-blur lg:hidden">
+        <div className="mx-auto flex max-w-3xl flex-col gap-3">
+          <div className="flex items-center gap-2">
+            {TOOLS.map((tool) => {
+              const Icon = tool.icon;
+              const isSelected = currentTool === tool.id;
+              return (
+                <button
+                  key={tool.id}
+                  type="button"
+                  onClick={() => setCurrentTool(tool.id)}
+                  className={cn(
+                    "toy-icon-button h-12 w-12 bg-[#f1f6ff] text-[#23244d]",
+                    isSelected && "bg-[#fff3b0] text-[#ff477e]",
+                  )}
+                  aria-label={tool.label}
+                  aria-pressed={isSelected}
+                  title={tool.label}
+                >
+                  <Icon className="h-5 w-5" aria-hidden="true" />
+                </button>
+              );
+            })}
+            <button
+              type="button"
+              onClick={clearCanvas}
+              className="toy-icon-button h-12 w-12 bg-[#dff7ff] text-[#23244d]"
+              aria-label="Clear canvas"
+              title="Clear canvas"
+            >
+              <RotateCcw className="h-5 w-5" aria-hidden="true" />
+            </button>
+            <button
+              type="button"
+              onClick={handleGenerateImage}
+              disabled={isProcessing}
+              className="toy-button min-h-12 flex-1 bg-[#ff477e] px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:bg-[#cbd5e1] sm:text-base"
+            >
+              {isProcessing ? (
+                <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
+              ) : (
+                <WandSparkles className="h-5 w-5" aria-hidden="true" />
+              )}
+              {generateLabel}
+            </button>
+          </div>
+
+          <div className="flex items-center gap-2 overflow-x-auto pb-1">
+            {COLORS.map((color) => {
+              const isSelected = currentColor.toLowerCase() === color.value.toLowerCase();
+              return (
+                <button
+                  key={color.value}
+                  type="button"
+                  onClick={() => setCurrentColor(color.value)}
+                  className="h-11 w-11 shrink-0 rounded-2xl border-4 border-white shadow-[0_5px_0_rgba(35,36,77,0.12)]"
+                  style={{
+                    backgroundColor: color.value,
+                    boxShadow: isSelected
+                      ? `0 0 0 3px #fffdf7, 0 0 0 6px ${color.value}, 0 7px 0 rgba(35,36,77,0.14)`
+                      : undefined,
+                  }}
+                  aria-label={`Use ${color.name}`}
+                  aria-pressed={isSelected}
+                  title={color.name}
+                />
+              );
+            })}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <span className="shrink-0 font-nunito text-xs font-black uppercase tracking-normal text-[#52607e]">
+              Size
+            </span>
+            <input
+              type="range"
+              min="2"
+              max="26"
+              value={brushSize}
+              onChange={(event) => setBrushSize(Number.parseInt(event.target.value, 10))}
+              className="h-4 flex-1 accent-[#ff477e]"
+              aria-label="Brush size"
+            />
+            <span className="w-10 text-right font-nunito text-xs font-black text-[#23244d]">{brushSize}px</span>
+          </div>
         </div>
       </div>
-      
-      {/* Modals */}
-      {isHelpModalOpen && (
-        <HelpModal onClose={() => setIsHelpModalOpen(false)} />
-      )}
-      
-      {isProcessing && (
-        <ProcessingIndicator />
-      )}
+
+      {isHelpModalOpen && <HelpModal onClose={() => setIsHelpModalOpen(false)} />}
+      {isProcessing && <ProcessingIndicator />}
     </div>
   );
 };

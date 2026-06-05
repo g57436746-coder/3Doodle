@@ -64,7 +64,7 @@ function getEnvValue(key: string): string | undefined {
 }
 
 function getApiKey(envVarName: string): string {
-  const apiKey = getEnvValue(envVarName);
+  const apiKey = getEnvValue(envVarName) || getEnvValue("OPENROUTER_API_KEY");
 
   if (!apiKey) {
     throw new OpenRouterConfigError(envVarName);
@@ -129,23 +129,25 @@ async function postOpenRouterChatCompletion(payload: Record<string, unknown>, ap
 }
 
 export async function chatWithOpenRouter(messages: ChatMessage[]): Promise<string> {
-  const openrouter = new OpenRouter({
-    apiKey: getApiKey("OPENROUTER_CHAT_API_KEY"),
-  });
-
-  const transcript = messages
-    .map((message) => `${message.role === "user" ? "User" : "Assistant"}: ${message.content}`)
-    .join("\n");
-
-  const result = openrouter.callModel({
+  const result = await postOpenRouterChatCompletion({
     model: CHAT_MODEL,
-    instructions: CHAT_SYSTEM_PROMPT,
-    input: transcript,
-    maxOutputTokens: 220,
+    messages: [
+      {
+        role: "system",
+        content: CHAT_SYSTEM_PROMPT,
+      },
+      ...messages.map((message) => ({
+        role: message.role === "user" ? "user" : "assistant",
+        content: message.content,
+      })),
+    ],
+    max_tokens: 220,
     temperature: 0.7,
-  });
+    stream: false,
+  }, getApiKey("OPENROUTER_CHAT_API_KEY"));
 
-  return (await result.getText()).trim();
+  const content = result.choices?.[0]?.message?.content;
+  return typeof content === "string" ? content.trim() : "";
 }
 
 export async function detectObjectInDrawing(imageData: string): Promise<string> {
