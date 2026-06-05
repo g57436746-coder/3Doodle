@@ -1,11 +1,14 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
 import { z } from 'zod';
-import { generateImageSchema, GalleryItem } from '@shared/schema';
+import { chatRequestSchema, generateImageSchema, GalleryItem } from '@shared/schema';
 import { nanoid } from 'nanoid';
-import { detectObjectInDrawing, generate3DModel } from './gemini';
-import { compressImage } from '../client/src/lib/imageUtils';
+import {
+  chatWithOpenRouter,
+  detectObjectInDrawing,
+  generate3DModel,
+  isOpenRouterConfigError,
+} from './openrouter';
 
 // In-memory storage for generated gallery items
 let galleryItems: GalleryItem[] = [];
@@ -16,7 +19,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     res.json(galleryItems);
   });
   
-  // Generate 3D image from a sketch using Gemini AI
+  app.post('/api/chat', async (req, res) => {
+    try {
+      const validatedData = chatRequestSchema.parse(req.body);
+      const content = await chatWithOpenRouter(validatedData.messages);
+
+      res.status(200).json({
+        message: {
+          role: 'assistant',
+          content: content || "I am here to help with your next doodle.",
+        },
+      });
+    } catch (error) {
+      console.error('Error chatting with OpenRouter:', error);
+
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({
+          message: 'Invalid chat request data',
+          errors: error.errors
+        });
+      }
+
+      if (isOpenRouterConfigError(error)) {
+        return res.status(500).json({
+          message: error.message
+        });
+      }
+
+      res.status(500).json({
+        message: 'Failed to send chat message. Please try again.'
+      });
+    }
+  });
+  
+  // Generate 3D image from a sketch using OpenRouter AI
   app.post('/api/generate', async (req, res) => {
     try {
       // Validate request body
@@ -28,11 +64,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Log processing start
       console.log('Processing drawing to detect object...');
       
-      // Detect object type from the sketch using Gemini API
+      // Detect object type from the sketch using OpenRouter
       const objectType = await detectObjectInDrawing(imageData);
       console.log(`Detected object type: ${objectType}`);
       
-      // Generate 3D image using Gemini API
+      // Generate 3D image using Sourceful Riverflow through OpenRouter
       console.log(`Generating 3D model for: ${objectType}`);
       const imageUrl = await generate3DModel(objectType);
       
@@ -58,6 +94,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ 
           message: 'Invalid request data', 
           errors: error.errors 
+        });
+      }
+
+      if (isOpenRouterConfigError(error)) {
+        return res.status(500).json({
+          message: error.message
         });
       }
       

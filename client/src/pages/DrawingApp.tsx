@@ -7,6 +7,7 @@ import ToolSelector from '@/components/ToolSelector';
 import Gallery from '@/components/Gallery';
 import HelpModal from '@/components/HelpModal';
 import ProcessingIndicator from '@/components/ProcessingIndicator';
+import ChatPanel from '@/components/ChatPanel';
 import { useDrawing } from '@/hooks/useDrawing';
 import { apiRequest } from '@/lib/queryClient';
 import { GalleryItem } from '../../../shared/schema';
@@ -51,7 +52,7 @@ const DrawingApp = () => {
       // Get the image data from canvas
       const imageData = getCanvasImage();
       
-      // Send image to server for processing with Gemini API
+      // Send image to server for processing with OpenRouter
       const response = await apiRequest('POST', '/api/generate', {
         imageData,
       });
@@ -139,7 +140,7 @@ const DrawingApp = () => {
         
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* Drawing Canvas Section */}
-          <div className="lg:col-span-9 bg-white rounded-2xl shadow-lg p-4 relative">
+          <div className="lg:col-span-8 bg-white rounded-2xl shadow-lg p-4 relative">
             <div className="mb-4 flex justify-between items-center">
               <h2 className="font-nunito font-bold text-xl text-primary-600">Drawing Canvas</h2>
               <div className="text-gray-600 text-sm">
@@ -179,60 +180,64 @@ const DrawingApp = () => {
             </div>
           </div>
           
-          {/* Tools Panel */}
-          <div className="lg:col-span-3 bg-white rounded-2xl shadow-lg p-4">
-            <h2 className="font-nunito font-bold text-lg text-primary-600 mb-4">Drawing Tools</h2>
-            
-            <ColorPicker 
-              currentColor={currentColor}
-              setCurrentColor={setCurrentColor}
-            />
-            
-            <BrushSizeControl 
-              brushSize={brushSize}
-              setBrushSize={setBrushSize}
-            />
-            
-            <ToolSelector 
-              currentTool={currentTool}
-              setCurrentTool={setCurrentTool}
-            />
-            
-            <div>
-              <h3 className="text-sm text-gray-600 mb-2">Try Drawing</h3>
-              <div className="grid grid-cols-2 gap-2">
-                <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
-                  <span className="text-sm">Apple</span>
+          <div className="lg:col-span-4 space-y-6">
+            {/* Tools Panel */}
+            <div className="bg-white rounded-2xl shadow-lg p-4">
+              <h2 className="font-nunito font-bold text-lg text-primary-600 mb-4">Drawing Tools</h2>
+              
+              <ColorPicker 
+                currentColor={currentColor}
+                setCurrentColor={setCurrentColor}
+              />
+              
+              <BrushSizeControl 
+                brushSize={brushSize}
+                setBrushSize={setBrushSize}
+              />
+              
+              <ToolSelector 
+                currentTool={currentTool}
+                setCurrentTool={setCurrentTool}
+              />
+              
+              <div>
+                <h3 className="text-sm text-gray-600 mb-2">Try Drawing</h3>
+                <div className="grid grid-cols-2 gap-2">
+                  <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
+                    <span className="text-sm">Apple</span>
+                  </div>
+                  <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
+                    <span className="text-sm">Cat</span>
+                  </div>
+                  <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
+                    <span className="text-sm">Flower</span>
+                  </div>
+                  <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
+                    <span className="text-sm">House</span>
+                  </div>
+                  <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
+                    <span className="text-sm">Dog</span>
+                  </div>
+                  <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
+                    <span className="text-sm">Car</span>
+                  </div>
+                  <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
+                    <span className="text-sm">Sun</span>
+                  </div>
+                  <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
+                    <span className="text-sm">Tree</span>
+                  </div>
                 </div>
-                <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
-                  <span className="text-sm">Cat</span>
+                <div className="mt-4 p-3 bg-primary-50 rounded-lg">
+                  <p className="text-xs text-primary-700">
+                    <i className="ri-lightbulb-line mr-1"></i>
+                    <strong>Tip:</strong> Draw a simple outline. The AI is great at recognizing basic shapes!
+                  </p>
                 </div>
-                <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
-                  <span className="text-sm">Flower</span>
-                </div>
-                <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
-                  <span className="text-sm">House</span>
-                </div>
-                <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
-                  <span className="text-sm">Dog</span>
-                </div>
-                <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
-                  <span className="text-sm">Car</span>
-                </div>
-                <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
-                  <span className="text-sm">Sun</span>
-                </div>
-                <div className="bg-gray-100 p-2 rounded-lg text-center hover:bg-primary-50 cursor-pointer transition-colors">
-                  <span className="text-sm">Tree</span>
-                </div>
-              </div>
-              <div className="mt-4 p-3 bg-primary-50 rounded-lg">
-                <p className="text-xs text-primary-700">
-                  <i className="ri-lightbulb-line mr-1"></i>
-                  <strong>Tip:</strong> Draw a simple outline. The AI is great at recognizing basic shapes!
-                </p>
               </div>
             </div>
+
+            <ChatPanel />
           </div>
         </div>
         

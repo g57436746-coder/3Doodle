@@ -47,3 +47,15 @@ export const generateImageSchema = z.object({
 });
 
 export type GenerateImageRequest = z.infer<typeof generateImageSchema>;
+
+export const chatMessageSchema = z.object({
+  role: z.enum(["user", "assistant"]),
+  content: z.string().trim().min(1, "Message content is required"),
+});
+
+export const chatRequestSchema = z.object({
+  messages: z.array(chatMessageSchema).min(1, "At least one message is required"),
+});
+
+export type ChatMessage = z.infer<typeof chatMessageSchema>;
+export type ChatRequest = z.infer<typeof chatRequestSchema>;

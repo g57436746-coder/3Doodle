@@ -2,35 +2,37 @@
 
 ## Project Overview
 
-3Doodle is an interactive web application that transforms simple drawings into 3D images with generated sounds. It's designed to be kid-friendly, using Google's Gemini AI models to detect what's been drawn and generate a corresponding 3D representation of the object. This application bridges the gap between imagination and visualization, making it fun for children to see their drawings come to life!
+3Doodle is an interactive web application that transforms simple drawings into 3D images with generated sounds. It's designed to be kid-friendly, using OpenRouter models to chat with users, detect what's been drawn, and generate a corresponding 3D representation of the object. This application bridges the gap between imagination and visualization, making it fun for children to see their drawings come to life!
 
 ## Functionality
 
 The 3Doodle application works through a simple, user-friendly process:
 
 1. **Draw**: Users create simple sketches on a digital canvas using the drawing tools provided.
-2. **Detect**: Using Google's Gemini AI, the application identifies the object drawn.
-3. **Generate**: Once identified, Gemini AI creates a 3D representation of the drawn object.
-4. **Interact**: Users can view their creations in the gallery, where they can also hear sounds associated with each object and download their creations.
+2. **Chat**: Users can ask the built-in OpenRouter chat helper for drawing ideas and simple tips.
+3. **Detect**: Using OpenRouter's free model router, the application identifies the object drawn.
+4. **Generate**: Once identified, Sourceful Riverflow creates a 3D representation of the drawn object.
+5. **Interact**: Users can view their creations in the gallery, where they can also hear sounds associated with each object and download their creations.
 
 The application features:
 - A simple and intuitive drawing interface with adjustable brush size and colors
+- A compact chat helper powered by OpenRouter's free model router
 - AI-powered object detection to identify the user's drawing
 - 3D image generation based on the identified object
 - A gallery to view, play sounds for, and download created 3D models
 
 ## APIs Used
 
-3Doodle utilizes the following Google Gemini API models:
-- **Gemini 2.5 Pro (gemini-2.5-pro-preview-03-25)**: Used for object detection in drawings
-- **Gemini 2.0 Flash for Image Generation (gemini-2.0-flash-exp-image-generation)**: Used to generate 3D representations of identified objects
+3Doodle utilizes two separate OpenRouter API keys:
+- **OPENROUTER_CHAT_API_KEY** with **openrouter/free**: Used by the chatbox.
+- **OPENROUTER_IMAGE_API_KEY** with **openrouter/free** for sketch detection and **sourceful/riverflow-v2.5-pro:free** for 3D image generation.
 
 ## Installation
 
 ### Prerequisites
 - Node.js (version 16 or later)
 - npm (comes with Node.js)
-- A Google API key with access to Gemini models
+- An OpenRouter API key
 
 ### Steps to Install
 
@@ -47,9 +49,10 @@ The application features:
 
 3. **Set up environment variables**
    
-   Create a `.env` file in the root directory and add your Gemini API key:
+   Create a `.env` file in the root directory and add both OpenRouter API keys:
    ```
-   GEMINI_API_KEY=your_api_key_here
+   OPENROUTER_CHAT_API_KEY=your_chat_api_key_here
+   OPENROUTER_IMAGE_API_KEY=your_image_api_key_here
    ```
 
 4. **Start the application**
@@ -65,12 +68,13 @@ The application features:
 
 To use 3Doodle, you need:
 
-1. A Google API key with access to Gemini models. You can obtain this from the [Google AI Studio](https://ai.google.dev/):
+1. Two OpenRouter API keys. You can obtain them from [OpenRouter](https://openrouter.ai/):
    - Create an account if you don't already have one
-   - Create a new API key
-   - Ensure the key has access to both required Gemini models:
-     - Gemini 2.5 Pro (gemini-2.5-pro-preview-03-25)
-     - Gemini 2.0 Flash for Image Generation (gemini-2.0-flash-exp-image-generation)
+   - Create one key for chat and one key for image generation
+   - Set `OPENROUTER_CHAT_API_KEY` for the chatbox
+   - Set `OPENROUTER_IMAGE_API_KEY` for sketch detection and Riverflow image generation
+
+For Netlify deployments, add both keys in the Netlify environment variable settings. Do not put secret API keys in `netlify.toml`.
 
 2. Store your API key securely in the `.env` file as mentioned in the installation steps.
 

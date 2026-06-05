@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState } from 'react';
-import { GalleryItem } from '@/shared/schema';
+import type { GalleryItem } from '@shared/schema';
 import { useToast } from '@/hooks/use-toast';
 import { playSound } from '@/lib/sounds';
 
