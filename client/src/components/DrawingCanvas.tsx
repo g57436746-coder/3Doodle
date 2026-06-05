@@ -156,7 +156,7 @@ const DrawingCanvas = ({
   return (
     <div
       ref={containerRef}
-      className="relative min-h-[320px] overflow-hidden rounded-[1.6rem] border-4 border-[#23244d] bg-[#fffdf7] shadow-[inset_0_0_0_6px_rgba(255,209,102,0.45),0_14px_0_rgba(35,36,77,0.10)] touch-none aspect-[1/1] sm:aspect-[4/3]"
+      className="relative min-h-[280px] lg:h-[360px] overflow-hidden rounded-[1.6rem] border-4 border-[#23244d] bg-[#fffdf7] shadow-[inset_0_0_0_6px_rgba(255,209,102,0.45),0_14px_0_rgba(35,36,77,0.10)] touch-none aspect-[1/1] sm:aspect-[4/3] lg:aspect-auto"
     >
       <canvas
         ref={canvasRef}

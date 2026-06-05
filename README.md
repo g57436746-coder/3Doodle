@@ -9,14 +9,14 @@
 The 3Doodle application works through a simple, user-friendly process:
 
 1. **Draw**: Users create simple sketches on a digital canvas using the drawing tools provided.
-2. **Chat**: Users can ask the built-in OpenRouter chat helper for drawing ideas and simple tips.
+2. **Chat**: Users can ask the built-in OpenRouter chat helper for drawing ideas, simple tips, or direct generated objects such as "pintame un gato".
 3. **Detect**: Using OpenRouter's free model router, the application identifies the object drawn.
 4. **Generate**: Once identified, Sourceful Riverflow creates a 3D representation of the drawn object.
 5. **Interact**: Users can view their creations in the gallery, where they can also hear sounds associated with each object and download their creations.
 
 The application features:
 - A simple and intuitive drawing interface with adjustable brush size and colors
-- A compact chat helper powered by OpenRouter's free model router
+- A compact chat helper powered by OpenRouter's free model router, with direct image requests sent to Sourceful Riverflow
 - AI-powered object detection to identify the user's drawing
 - 3D image generation based on the identified object
 - A gallery to view, play sounds for, and download created 3D models
@@ -24,7 +24,7 @@ The application features:
 ## APIs Used
 
 3Doodle utilizes two separate OpenRouter API keys:
-- **OPENROUTER_CHAT_API_KEY** with **openrouter/free**: Used by the chatbox.
+- **OPENROUTER_CHAT_API_KEY** with **openrouter/free**: Used by the chatbox for normal text replies.
 - **OPENROUTER_IMAGE_API_KEY** with **openrouter/free** for sketch detection and **sourceful/riverflow-v2.5-pro:free** for 3D image generation.
 
 ## Installation

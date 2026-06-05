@@ -1,4 +1,3 @@
-import { OpenRouter } from "@openrouter/agent";
 import type { ChatMessage } from "@shared/schema";
 
 const OPENROUTER_API_URL = "https://openrouter.ai/api/v1/chat/completions";
@@ -50,6 +49,21 @@ const fallbackObjects = [
   "ball",
 ];
 
+const objectAliases: Record<string, string[]> = {
+  apple: ["apple", "apples", "manzana", "manzanas"],
+  ball: ["ball", "balls", "pelota", "pelotas", "balon", "balones"],
+  car: ["car", "cars", "auto", "autos", "coche", "coches", "carro", "carros"],
+  cat: ["cat", "cats", "kitten", "kittens", "gato", "gatos", "gata", "gatas", "gatito", "gatita"],
+  dog: ["dog", "dogs", "puppy", "puppies", "perro", "perros", "perrito", "perrita"],
+  flower: ["flower", "flowers", "flor", "flores"],
+  house: ["house", "houses", "home", "casa", "casas"],
+  moon: ["moon", "luna"],
+  rainbow: ["rainbow", "rainbows", "arcoiris"],
+  rocket: ["rocket", "rockets", "cohete", "cohetes"],
+  sun: ["sun", "sol", "solecito"],
+  tree: ["tree", "trees", "arbol", "arboles"],
+};
+
 type NetlifyGlobal = typeof globalThis & {
   Netlify?: {
     env?: {
@@ -74,13 +88,17 @@ function getApiKey(envVarName: string): string {
 }
 
 function sanitizeObjectType(value: string | undefined): string {
-  const objectType = value
+  const words = value
     ?.toLowerCase()
-    .replace(/[^a-z\s-]/g, "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
     .trim()
-    .split(/\s+/)[0];
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 4);
 
-  return objectType || "object";
+  return words?.join(" ") || "object";
 }
 
 function getFallbackObject(): string {
@@ -148,6 +166,63 @@ export async function chatWithOpenRouter(messages: ChatMessage[]): Promise<strin
 
   const content = result.choices?.[0]?.message?.content;
   return typeof content === "string" ? content.trim() : "";
+}
+
+function stripPoliteAndFillerWords(value: string): string {
+  return value
+    .replace(/\b(?:please|pls|por favor|gracias|thanks|thank you)\b/g, " ")
+    .replace(/\b(?:for me|para mi|para mí)\b/g, " ")
+    .replace(/\b(?:in 3d|en 3d|3d|model|modelo|image|imagen|picture|foto)\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function getCanonicalObject(candidate: string): string | undefined {
+  const normalizedCandidate = sanitizeObjectType(candidate);
+  const candidateWords = new Set(normalizedCandidate.split(/\s+/));
+
+  for (const [objectType, aliases] of Object.entries(objectAliases)) {
+    if (aliases.some((alias) => candidateWords.has(alias))) {
+      return objectType;
+    }
+  }
+
+  return normalizedCandidate === "object" ? undefined : normalizedCandidate;
+}
+
+export function getRequestedImageObject(messages: ChatMessage[]): string | undefined {
+  const latestUserMessage = [...messages].reverse().find((message) => message.role === "user");
+
+  if (!latestUserMessage) {
+    return undefined;
+  }
+
+  const text = latestUserMessage.content
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[¿?¡!.,;:]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+
+  const directRequestPatterns = [
+    /\b(?:can you|could you|please)\s+(?:draw|paint|generate|make|create|render|show)\s+(?:me\s+)?(?:a|an|the)?\s*(.+)\b/,
+    /\b(?:draw|paint|generate|make|create|render|show)\s+(?:me\s+)?(?:a|an|the)?\s*(.+)\b/,
+    /\b(?:pinta|pintame|dibujame|dibuja|genera|generame|crea|haz|muestra|muestrame)\s+(?:un|una|el|la|los|las)?\s*(.+)\b/,
+    /\b(?:quiero|quisiera)\s+(?:un|una|el|la)?\s*(?:dibujo|modelo|imagen|foto)?\s*(?:de)?\s*(.+)\b/,
+  ];
+
+  for (const pattern of directRequestPatterns) {
+    const match = text.match(pattern);
+    const candidate = stripPoliteAndFillerWords(match?.[1] ?? "");
+    const objectType = getCanonicalObject(candidate);
+
+    if (objectType) {
+      return objectType;
+    }
+  }
+
+  return undefined;
 }
 
 export async function detectObjectInDrawing(imageData: string): Promise<string> {

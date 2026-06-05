@@ -7,11 +7,21 @@ import {
   chatWithOpenRouter,
   detectObjectInDrawing,
   generate3DModel,
+  getRequestedImageObject,
   isOpenRouterConfigError,
 } from './openrouter';
 
 // In-memory storage for generated gallery items
 let galleryItems: GalleryItem[] = [];
+
+function createGalleryItem(objectType: string, imageUrl: string): GalleryItem {
+  return {
+    id: nanoid(),
+    objectType,
+    imageUrl,
+    created: new Date().toISOString()
+  };
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // GET all gallery items
@@ -22,6 +32,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post('/api/chat', async (req, res) => {
     try {
       const validatedData = chatRequestSchema.parse(req.body);
+      const requestedObject = getRequestedImageObject(validatedData.messages);
+
+      if (requestedObject) {
+        console.log(`Generating 3D model from chat for: ${requestedObject}`);
+        const imageUrl = await generate3DModel(requestedObject);
+        const newItem = createGalleryItem(requestedObject, imageUrl);
+        galleryItems.unshift(newItem);
+
+        return res.status(200).json({
+          message: {
+            role: 'assistant',
+            content: `Done! I made a 3D ${requestedObject} and added it to your gallery.`,
+          },
+          galleryItem: newItem,
+        });
+      }
+
       const content = await chatWithOpenRouter(validatedData.messages);
 
       res.status(200).json({
@@ -73,12 +100,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const imageUrl = await generate3DModel(objectType);
       
       // Create gallery item
-      const newItem: GalleryItem = {
-        id: nanoid(),
-        objectType,
-        imageUrl,
-        created: new Date().toISOString()
-      };
+      const newItem = createGalleryItem(objectType, imageUrl);
       
       // Store the gallery item in-memory
       galleryItems.unshift(newItem);

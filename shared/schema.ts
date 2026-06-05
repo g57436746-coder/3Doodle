@@ -59,3 +59,8 @@ export const chatRequestSchema = z.object({
 
 export type ChatMessage = z.infer<typeof chatMessageSchema>;
 export type ChatRequest = z.infer<typeof chatRequestSchema>;
+
+export type ChatResponse = {
+  message: ChatMessage;
+  galleryItem?: GalleryItem;
+};

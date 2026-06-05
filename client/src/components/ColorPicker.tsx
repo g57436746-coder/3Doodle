@@ -20,11 +20,11 @@ export const COLORS = [
 
 const ColorPicker = ({ currentColor, setCurrentColor, className }: ColorPickerProps) => {
   return (
-    <div className={cn("space-y-3", className)}>
-      <h3 className="font-nunito text-sm font-black uppercase tracking-normal text-[#52607e]">
+    <div className={cn("space-y-2", className)}>
+      <h3 className="font-nunito text-xs font-black uppercase tracking-normal text-[#52607e]">
         Colors
       </h3>
-      <div className="grid grid-cols-4 gap-3">
+      <div className="grid grid-cols-4 gap-2">
         {COLORS.map((color) => {
           const isSelected = currentColor.toLowerCase() === color.value.toLowerCase();
 
@@ -32,11 +32,11 @@ const ColorPicker = ({ currentColor, setCurrentColor, className }: ColorPickerPr
             <motion.button
               key={color.value}
               type="button"
-              className="h-12 w-12 rounded-2xl border-4 border-white shadow-[0_6px_0_rgba(35,36,77,0.13)] outline-none transition focus-visible:ring-4 focus-visible:ring-[#ffd166]"
+              className="h-10 w-10 rounded-xl border-2 border-white shadow-[0_4px_0_rgba(35,36,77,0.13)] outline-none transition focus-visible:ring-4 focus-visible:ring-[#ffd166]"
               style={{
                 backgroundColor: color.value,
                 boxShadow: isSelected
-                  ? `0 0 0 3px #fffdf7, 0 0 0 7px ${color.value}, 0 9px 0 rgba(35,36,77,0.14)`
+                  ? `0 0 0 2px #fffdf7, 0 0 0 5px ${color.value}, 0 6px 0 rgba(35,36,77,0.14)`
                   : undefined,
               }}
               whileHover={{ y: -2 }}

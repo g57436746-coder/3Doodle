@@ -2,10 +2,11 @@ import { FormEvent, KeyboardEvent, useMemo, useRef, useState } from "react";
 import { Loader2, Send, Sparkles } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { cn } from "@/lib/utils";
-import type { ChatMessage } from "@shared/schema";
+import type { ChatMessage, ChatResponse, GalleryItem } from "@shared/schema";
 
 type ChatPanelProps = {
   className?: string;
+  onGalleryItemCreated?: (item: GalleryItem) => void;
 };
 
 const initialMessages: ChatMessage[] = [
@@ -15,7 +16,7 @@ const initialMessages: ChatMessage[] = [
   },
 ];
 
-const ChatPanel = ({ className }: ChatPanelProps) => {
+const ChatPanel = ({ className, onGalleryItemCreated }: ChatPanelProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
   const [draft, setDraft] = useState("");
   const [isSending, setIsSending] = useState(false);
@@ -47,10 +48,14 @@ const ChatPanel = ({ className }: ChatPanelProps) => {
       const response = await apiRequest("POST", "/api/chat", {
         messages: nextMessages,
       });
-      const result = await response.json();
-      const assistantMessage = result.message as ChatMessage;
+      const result = (await response.json()) as ChatResponse;
+      const assistantMessage = result.message;
 
       setMessages((currentMessages) => [...currentMessages, assistantMessage]);
+
+      if (result.galleryItem) {
+        onGalleryItemCreated?.(result.galleryItem);
+      }
     } catch (error) {
       console.error("Error sending chat message:", error);
       setMessages((currentMessages) => [

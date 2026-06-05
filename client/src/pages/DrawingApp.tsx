@@ -5,6 +5,7 @@ import {
   Images,
   Lightbulb,
   Loader2,
+  Palette,
   RotateCcw,
   Sparkles,
   WandSparkles,
@@ -30,6 +31,7 @@ const DrawingApp = () => {
   const [isHelpModalOpen, setIsHelpModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [galleryItems, setGalleryItems] = useState<GalleryItem[]>([]);
+  const [activeTab, setActiveTab] = useState<"tools" | "chat">("tools");
 
   const {
     canvasRef,
@@ -100,6 +102,19 @@ const DrawingApp = () => {
 
   const handleGalleryJump = () => {
     document.getElementById("gallery")?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleChatGeneratedItem = (item: GalleryItem) => {
+    setGalleryItems((prev) => [item, ...prev]);
+
+    toast({
+      title: "3D image generated!",
+      description: `Your ${item.objectType} has been created from chat!`,
+    });
+
+    window.setTimeout(() => {
+      document.getElementById("gallery")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }, 100);
   };
 
   useEffect(() => {
@@ -224,47 +239,79 @@ const DrawingApp = () => {
             </div>
           </section>
 
-          <aside className="hidden flex-col gap-5 lg:flex">
-            <section className="toy-panel rounded-[1.75rem] p-5">
-              <div className="mb-5 flex items-center gap-3">
-                <div className="flex h-12 w-12 items-center justify-center rounded-[1.1rem] bg-[#14b8c4] text-white shadow-[0_6px_0_rgba(35,36,77,0.15)]">
-                  <Sparkles className="h-5 w-5" aria-hidden="true" />
-                </div>
-                <div>
-                  <h2 className="font-nunito text-xl font-black text-[#23244d]">Drawing Tools</h2>
-                  <p className="text-xs font-bold text-[#52607e]">Color, brush, fill</p>
-                </div>
-              </div>
+          <aside className="hidden flex-col gap-4 lg:flex">
+            {/* Tab switcher for desktop sidebar */}
+            <div className="flex gap-2 p-1.5 bg-[#bdf4ff] rounded-[1.3rem] border-4 border-white shadow-[0_8px_0_rgba(35,36,77,0.06)]">
+              <button
+                type="button"
+                onClick={() => setActiveTab("tools")}
+                className={cn(
+                  "flex-1 py-2 px-3 rounded-[0.95rem] font-nunito font-black text-sm flex items-center justify-center gap-2 transition-all active:translate-y-[1px]",
+                  activeTab === "tools"
+                    ? "bg-[#fff3b0] text-[#ff477e] shadow-[0_4px_0_rgba(35,36,77,0.12)] border-2 border-white"
+                    : "text-[#52607e] hover:text-[#23244d]"
+                )}
+              >
+                <Palette className="h-4 w-4" />
+                Tools
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveTab("chat")}
+                className={cn(
+                  "flex-1 py-2 px-3 rounded-[0.95rem] font-nunito font-black text-sm flex items-center justify-center gap-2 transition-all active:translate-y-[1px]",
+                  activeTab === "chat"
+                    ? "bg-[#fff3b0] text-[#ff477e] shadow-[0_4px_0_rgba(35,36,77,0.12)] border-2 border-white"
+                    : "text-[#52607e] hover:text-[#23244d]"
+                )}
+              >
+                <Sparkles className="h-4 w-4" />
+                Chat Buddy
+              </button>
+            </div>
 
-              <div className="space-y-6">
-                <ColorPicker currentColor={currentColor} setCurrentColor={setCurrentColor} />
-                <BrushSizeControl brushSize={brushSize} setBrushSize={setBrushSize} />
-                <ToolSelector currentTool={currentTool} setCurrentTool={setCurrentTool} />
-
-                <div className="rounded-[1.4rem] bg-[#f1f6ff] p-4">
-                  <h3 className="mb-3 font-nunito text-sm font-black uppercase tracking-normal text-[#52607e]">
-                    Try drawing
-                  </h3>
-                  <div className="grid grid-cols-2 gap-2">
-                    {drawingIdeas.map((idea) => (
-                      <span
-                        key={idea}
-                        className="rounded-full bg-[#fffdf7] px-3 py-2 text-center font-nunito text-sm font-black text-[#23244d]"
-                      >
-                        {idea}
-                      </span>
-                    ))}
+            {activeTab === "tools" ? (
+              <section className="toy-panel rounded-[1.75rem] p-5">
+                <div className="mb-4 flex items-center gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-[0.9rem] bg-[#14b8c4] text-white shadow-[0_4px_0_rgba(35,36,77,0.15)]">
+                    <Palette className="h-4 w-4" aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h2 className="font-nunito text-lg font-black leading-none text-[#23244d]">Drawing Tools</h2>
+                    <p className="text-[10px] font-bold text-[#52607e] mt-1">Color, brush, fill</p>
                   </div>
                 </div>
-              </div>
-            </section>
 
-            <ChatPanel className="min-h-[360px]" />
+                <div className="space-y-4">
+                  <ColorPicker currentColor={currentColor} setCurrentColor={setCurrentColor} />
+                  <BrushSizeControl brushSize={brushSize} setBrushSize={setBrushSize} />
+                  <ToolSelector currentTool={currentTool} setCurrentTool={setCurrentTool} />
+
+                  <div className="rounded-[1.2rem] bg-[#f1f6ff] p-3.5">
+                    <h3 className="mb-2 font-nunito text-xs font-black uppercase tracking-normal text-[#52607e]">
+                      Try drawing
+                    </h3>
+                    <div className="grid grid-cols-2 gap-1.5">
+                      {drawingIdeas.map((idea) => (
+                        <span
+                          key={idea}
+                          className="rounded-full bg-[#fffdf7] py-1 text-center font-nunito text-xs font-black text-[#23244d] border border-gray-100"
+                        >
+                          {idea}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </section>
+            ) : (
+              <ChatPanel className="min-h-[360px]" onGalleryItemCreated={handleChatGeneratedItem} />
+            )}
           </aside>
         </section>
 
         <section className="grid gap-5 lg:hidden">
-          <ChatPanel />
+          <ChatPanel onGalleryItemCreated={handleChatGeneratedItem} />
         </section>
 
         <section id="gallery" className="toy-panel scroll-mt-24 rounded-[2rem] p-4 sm:p-5 lg:p-6">

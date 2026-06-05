@@ -17,14 +17,13 @@ const BrushSizeControl = ({ brushSize, setBrushSize, className }: BrushSizeContr
   const handleSizeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setBrushSize(Number.parseInt(event.target.value, 10));
   };
-
   return (
-    <div className={cn("space-y-3", className)}>
-      <div className="flex items-center justify-between gap-3">
-        <h3 className="font-nunito text-sm font-black uppercase tracking-normal text-[#52607e]">
+    <div className={cn("space-y-1.5", className)}>
+      <div className="flex items-center justify-between gap-2">
+        <h3 className="font-nunito text-xs font-black uppercase tracking-normal text-[#52607e]">
           Brush size
         </h3>
-        <span className="rounded-full bg-[#fff3b0] px-3 py-1 font-nunito text-sm font-black text-[#23244d]">
+        <span className="rounded-full bg-[#fff3b0] px-2.5 py-0.5 font-nunito text-xs font-black text-[#23244d]">
           {displaySize}
         </span>
       </div>
@@ -33,11 +32,11 @@ const BrushSizeControl = ({ brushSize, setBrushSize, className }: BrushSizeContr
         min="2"
         max="26"
         value={brushSize}
-        className="h-4 w-full cursor-pointer accent-[#ff477e]"
+        className="h-3 w-full cursor-pointer accent-[#ff477e]"
         onChange={handleSizeChange}
         aria-label="Brush size"
       />
-      <div className="flex justify-between font-nunito text-xs font-bold text-[#52607e]">
+      <div className="flex justify-between font-nunito text-[10px] font-bold text-[#52607e] leading-none">
         <span>Small</span>
         <span>Jumbo</span>
       </div>
