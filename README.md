@@ -25,7 +25,9 @@ The application features:
 
 3Doodle utilizes two separate OpenRouter API keys:
 - **OPENROUTER_CHAT_API_KEY** with **openrouter/free**: Used by the chatbox for normal text replies.
-- **OPENROUTER_IMAGE_API_KEY** with **openrouter/free** for sketch detection and **sourceful/riverflow-v2.5-pro:free** for 3D image generation.
+- **OPENROUTER_IMAGE_API_KEY** with **sourceful/riverflow-v2.5-pro:free** for chat image requests and sketch-to-3D image generation.
+
+You can also set one **OPENROUTER_API_KEY** instead; the server uses it as a fallback for both chat and image generation.
 
 ## Installation
 
@@ -51,6 +53,7 @@ The application features:
    
    Create a `.env` file in the root directory and add both OpenRouter API keys:
    ```
+   OPENROUTER_API_KEY=your_openrouter_api_key_here
    OPENROUTER_CHAT_API_KEY=your_chat_api_key_here
    OPENROUTER_IMAGE_API_KEY=your_image_api_key_here
    ```
@@ -68,13 +71,12 @@ The application features:
 
 To use 3Doodle, you need:
 
-1. Two OpenRouter API keys. You can obtain them from [OpenRouter](https://openrouter.ai/):
+1. OpenRouter API key configuration. You can obtain keys from [OpenRouter](https://openrouter.ai/):
    - Create an account if you don't already have one
-   - Create one key for chat and one key for image generation
-   - Set `OPENROUTER_CHAT_API_KEY` for the chatbox
-   - Set `OPENROUTER_IMAGE_API_KEY` for sketch detection and Riverflow image generation
+   - Set `OPENROUTER_API_KEY` to use one key for the whole app
+   - Or set `OPENROUTER_CHAT_API_KEY` for chat and `OPENROUTER_IMAGE_API_KEY` for Riverflow image generation
 
-For Netlify deployments, add both keys in the Netlify environment variable settings. Do not put secret API keys in `netlify.toml`.
+For Netlify deployments, add `OPENROUTER_API_KEY` or the two specific keys in the Netlify environment variable settings. Do not put secret API keys in `netlify.toml`.
 
 2. Store your API key securely in the `.env` file as mentioned in the installation steps.
 

@@ -140,14 +140,14 @@ const DrawingApp = () => {
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-[#bdf4ff] text-[#23244d] studio-pattern">
-      <header className="sticky top-0 z-30 border-b-4 border-white bg-[#bdf4ff]/92 px-3 py-3 backdrop-blur sm:px-5 lg:px-8">
+      <header className="sticky top-0 z-30 border-b-4 border-white bg-[#bdf4ff]/92 px-3 py-2 backdrop-blur sm:px-5 sm:py-3 lg:px-8">
         <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[1.1rem] bg-[#ff477e] text-white shadow-[0_6px_0_rgba(35,36,77,0.14)]">
-              <Sparkles className="h-6 w-6" aria-hidden="true" />
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[1rem] bg-[#ff477e] text-white shadow-[0_5px_0_rgba(35,36,77,0.14)] sm:h-12 sm:w-12 sm:rounded-[1.1rem] sm:shadow-[0_6px_0_rgba(35,36,77,0.14)]">
+              <Sparkles className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
             </div>
             <div className="min-w-0">
-              <h1 className="truncate font-nunito text-2xl font-black leading-none text-[#23244d] sm:text-3xl">
+              <h1 className="truncate font-nunito text-xl font-black leading-none text-[#23244d] sm:text-3xl">
                 3Doodle
               </h1>
               <p className="hidden text-xs font-bold text-[#52607e] sm:block">Toy studio</p>
@@ -189,19 +189,20 @@ const DrawingApp = () => {
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-[1480px] flex-col gap-5 px-3 pb-[calc(14rem+env(safe-area-inset-bottom))] pt-4 sm:px-5 sm:pb-[calc(13rem+env(safe-area-inset-bottom))] lg:px-8 lg:pb-8">
-        <section className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_390px] xl:grid-cols-[minmax(0,1fr)_420px]">
-          <section className="toy-panel rounded-[2rem] p-3 sm:p-4 lg:p-5">
-            <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <main className="mx-auto flex w-full max-w-[1480px] flex-col gap-3 px-2 pb-[calc(10.75rem+env(safe-area-inset-bottom))] pt-2 sm:gap-5 sm:px-5 sm:pb-[calc(13rem+env(safe-area-inset-bottom))] sm:pt-4 lg:px-8 lg:pb-8">
+        <section className="grid gap-3 sm:gap-5 lg:grid-cols-[minmax(0,1fr)_390px] xl:grid-cols-[minmax(0,1fr)_420px]">
+          <section className="toy-panel rounded-[1.35rem] p-2 sm:rounded-[2rem] sm:p-4 lg:p-5">
+            <div className="mb-2 flex items-center justify-between gap-2 sm:mb-4 sm:flex-row sm:items-end">
               <div>
-                <p className="font-nunito text-sm font-black uppercase tracking-normal text-[#ff477e]">
+                <p className="hidden font-nunito text-sm font-black uppercase tracking-normal text-[#ff477e] sm:block">
                   Canvas first
                 </p>
-                <h2 className="font-nunito text-2xl font-black leading-tight text-[#23244d] sm:text-3xl">
-                  Draw your next 3D doodle
+                <h2 className="font-nunito text-xl font-black leading-tight text-[#23244d] sm:text-3xl">
+                  <span className="sm:hidden">Draw</span>
+                  <span className="hidden sm:inline">Draw your next 3D doodle</span>
                 </h2>
               </div>
-              <div className="inline-flex w-fit items-center gap-2 rounded-full bg-[#fff3b0] px-4 py-2 font-nunito text-sm font-black text-[#23244d]">
+              <div className="hidden w-fit items-center gap-2 rounded-full bg-[#fff3b0] px-4 py-2 font-nunito text-sm font-black text-[#23244d] sm:inline-flex">
                 <Lightbulb className="h-4 w-4 text-[#ff8a00]" aria-hidden="true" />
                 Simple outlines work best
               </div>
@@ -340,8 +341,8 @@ const DrawingApp = () => {
         </section>
       </main>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 border-t-4 border-white bg-[#fffdf7]/96 px-3 pb-[calc(env(safe-area-inset-bottom)+0.75rem)] pt-3 shadow-[0_-18px_42px_rgba(35,36,77,0.18)] backdrop-blur lg:hidden">
-        <div className="mx-auto flex max-w-3xl flex-col gap-3">
+      <div className="fixed inset-x-0 bottom-0 z-40 border-t-4 border-white bg-[#fffdf7]/96 px-2 pb-[calc(env(safe-area-inset-bottom)+0.5rem)] pt-2 shadow-[0_-14px_32px_rgba(35,36,77,0.16)] backdrop-blur lg:hidden">
+        <div className="mx-auto flex max-w-3xl flex-col gap-2">
           <div className="flex items-center gap-2">
             {TOOLS.map((tool) => {
               const Icon = tool.icon;
@@ -352,7 +353,7 @@ const DrawingApp = () => {
                   type="button"
                   onClick={() => setCurrentTool(tool.id)}
                   className={cn(
-                    "toy-icon-button h-12 w-12 bg-[#f1f6ff] text-[#23244d]",
+                    "toy-icon-button h-11 w-11 rounded-[1.1rem] bg-[#f1f6ff] text-[#23244d]",
                     isSelected && "bg-[#fff3b0] text-[#ff477e]",
                   )}
                   aria-label={tool.label}
@@ -366,7 +367,7 @@ const DrawingApp = () => {
             <button
               type="button"
               onClick={clearCanvas}
-              className="toy-icon-button h-12 w-12 bg-[#dff7ff] text-[#23244d]"
+              className="toy-icon-button h-11 w-11 rounded-[1.1rem] bg-[#dff7ff] text-[#23244d]"
               aria-label="Clear canvas"
               title="Clear canvas"
             >
@@ -376,14 +377,15 @@ const DrawingApp = () => {
               type="button"
               onClick={handleGenerateImage}
               disabled={isProcessing}
-              className="toy-button min-h-12 flex-1 bg-[#ff477e] px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:bg-[#cbd5e1] sm:text-base"
+              className="toy-button min-h-11 flex-1 rounded-[1.1rem] bg-[#ff477e] px-3 py-2 text-sm text-white disabled:cursor-not-allowed disabled:bg-[#cbd5e1] sm:text-base"
             >
               {isProcessing ? (
                 <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
               ) : (
                 <WandSparkles className="h-5 w-5" aria-hidden="true" />
               )}
-              {generateLabel}
+              <span className="sm:hidden">{isProcessing ? "..." : "3D"}</span>
+              <span className="hidden sm:inline">{generateLabel}</span>
             </button>
           </div>
 
@@ -395,7 +397,7 @@ const DrawingApp = () => {
                   key={color.value}
                   type="button"
                   onClick={() => setCurrentColor(color.value)}
-                  className="h-11 w-11 shrink-0 rounded-2xl border-4 border-white shadow-[0_5px_0_rgba(35,36,77,0.12)]"
+                  className="h-9 w-9 shrink-0 rounded-[0.95rem] border-[3px] border-white shadow-[0_4px_0_rgba(35,36,77,0.12)] sm:h-11 sm:w-11 sm:rounded-2xl sm:border-4 sm:shadow-[0_5px_0_rgba(35,36,77,0.12)]"
                   style={{
                     backgroundColor: color.value,
                     boxShadow: isSelected
