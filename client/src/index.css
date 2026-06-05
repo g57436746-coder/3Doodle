@@ -24,6 +24,14 @@
     --input: 220 32% 84%;
     --ring: 331 91% 58%;
     --radius: 1.25rem;
+    --app-vh: 100svh;
+    --mobile-toolbar-height: 9.25rem;
+  }
+
+  @supports (height: 100dvh) {
+    :root {
+      --app-vh: 100dvh;
+    }
   }
 
   * {
@@ -73,5 +81,33 @@
     text-decoration-thickness: 0.24em;
     text-underline-offset: -0.12em;
     text-decoration-skip-ink: none;
+  }
+
+  .mobile-drawing-viewport {
+    min-height: var(--app-vh);
+  }
+
+  .mobile-drawing-main {
+    padding-bottom: calc(var(--mobile-toolbar-height) + env(safe-area-inset-bottom));
+  }
+
+  .mobile-canvas-stage {
+    height: clamp(320px, calc(var(--app-vh) - 15rem), 560px);
+  }
+
+  @media (max-height: 760px) {
+    .mobile-canvas-stage {
+      height: clamp(280px, calc(var(--app-vh) - 13.5rem), 480px);
+    }
+  }
+
+  @media (min-width: 640px) {
+    .mobile-drawing-main {
+      padding-bottom: calc(13rem + env(safe-area-inset-bottom));
+    }
+
+    .mobile-canvas-stage {
+      height: auto;
+    }
   }
 }

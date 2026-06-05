@@ -48,6 +48,24 @@ const DrawingApp = () => {
     getCanvasImage,
   } = useDrawing();
 
+  useEffect(() => {
+    const updateViewportHeight = () => {
+      const height = window.visualViewport?.height ?? window.innerHeight;
+      document.documentElement.style.setProperty("--app-vh", `${height}px`);
+    };
+
+    updateViewportHeight();
+    window.visualViewport?.addEventListener("resize", updateViewportHeight);
+    window.addEventListener("resize", updateViewportHeight);
+    window.addEventListener("orientationchange", updateViewportHeight);
+
+    return () => {
+      window.visualViewport?.removeEventListener("resize", updateViewportHeight);
+      window.removeEventListener("resize", updateViewportHeight);
+      window.removeEventListener("orientationchange", updateViewportHeight);
+    };
+  }, []);
+
   const handleNewDoodle = () => {
     clearCanvas();
   };
@@ -139,15 +157,15 @@ const DrawingApp = () => {
   const generateLabel = isProcessing ? "Making..." : "Generate 3D";
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-[#bdf4ff] text-[#23244d] studio-pattern">
-      <header className="sticky top-0 z-30 border-b-4 border-white bg-[#bdf4ff]/92 px-3 py-2 backdrop-blur sm:px-5 sm:py-3 lg:px-8">
+    <div className="mobile-drawing-viewport overflow-x-hidden bg-[#bdf4ff] text-[#23244d] studio-pattern">
+      <header className="sticky top-0 z-30 border-b-4 border-white bg-[#bdf4ff]/92 px-2 py-1.5 backdrop-blur sm:px-5 sm:py-3 lg:px-8">
         <div className="mx-auto flex max-w-[1480px] items-center justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[1rem] bg-[#ff477e] text-white shadow-[0_5px_0_rgba(35,36,77,0.14)] sm:h-12 sm:w-12 sm:rounded-[1.1rem] sm:shadow-[0_6px_0_rgba(35,36,77,0.14)]">
-              <Sparkles className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
+            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[0.95rem] bg-[#ff477e] text-white shadow-[0_4px_0_rgba(35,36,77,0.14)] sm:h-12 sm:w-12 sm:rounded-[1.1rem] sm:shadow-[0_6px_0_rgba(35,36,77,0.14)]">
+              <Sparkles className="h-4 w-4 sm:h-6 sm:w-6" aria-hidden="true" />
             </div>
             <div className="min-w-0">
-              <h1 className="truncate font-nunito text-xl font-black leading-none text-[#23244d] sm:text-3xl">
+              <h1 className="truncate font-nunito text-lg font-black leading-none text-[#23244d] sm:text-3xl">
                 3Doodle
               </h1>
               <p className="hidden text-xs font-bold text-[#52607e] sm:block">Toy studio</p>
@@ -189,20 +207,19 @@ const DrawingApp = () => {
         </div>
       </header>
 
-      <main className="mx-auto flex w-full max-w-[1480px] flex-col gap-3 px-2 pb-[calc(10.75rem+env(safe-area-inset-bottom))] pt-2 sm:gap-5 sm:px-5 sm:pb-[calc(13rem+env(safe-area-inset-bottom))] sm:pt-4 lg:px-8 lg:pb-8">
+      <main className="mobile-drawing-main mx-auto flex w-full max-w-[1480px] flex-col gap-3 px-2 pt-2 sm:gap-5 sm:px-5 sm:pt-4 lg:px-8 lg:pb-8">
         <section className="grid gap-3 sm:gap-5 lg:grid-cols-[minmax(0,1fr)_390px] xl:grid-cols-[minmax(0,1fr)_420px]">
           <section className="toy-panel rounded-[1.35rem] p-2 sm:rounded-[2rem] sm:p-4 lg:p-5">
-            <div className="mb-2 flex items-center justify-between gap-2 sm:mb-4 sm:flex-row sm:items-end">
+            <div className="hidden items-center justify-between gap-2 sm:mb-4 sm:flex sm:flex-row sm:items-end">
               <div>
-                <p className="hidden font-nunito text-sm font-black uppercase tracking-normal text-[#ff477e] sm:block">
+                <p className="font-nunito text-sm font-black uppercase tracking-normal text-[#ff477e]">
                   Canvas first
                 </p>
                 <h2 className="font-nunito text-xl font-black leading-tight text-[#23244d] sm:text-3xl">
-                  <span className="sm:hidden">Draw</span>
-                  <span className="hidden sm:inline">Draw your next 3D doodle</span>
+                  Draw your next 3D doodle
                 </h2>
               </div>
-              <div className="hidden w-fit items-center gap-2 rounded-full bg-[#fff3b0] px-4 py-2 font-nunito text-sm font-black text-[#23244d] sm:inline-flex">
+              <div className="inline-flex w-fit items-center gap-2 rounded-full bg-[#fff3b0] px-4 py-2 font-nunito text-sm font-black text-[#23244d]">
                 <Lightbulb className="h-4 w-4 text-[#ff8a00]" aria-hidden="true" />
                 Simple outlines work best
               </div>
@@ -215,6 +232,7 @@ const DrawingApp = () => {
               brushSize={brushSize}
               isDrawn={isDrawn}
               setIsDrawn={setIsDrawn}
+              className="mobile-canvas-stage"
             />
 
             <div className="mt-5 hidden items-center justify-between gap-4 lg:flex">

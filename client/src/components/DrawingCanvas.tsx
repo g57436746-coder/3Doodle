@@ -1,6 +1,7 @@
 import { RefObject, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { Pencil, Sparkles } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 type DrawingCanvasProps = {
   canvasRef: RefObject<HTMLCanvasElement>;
@@ -9,6 +10,7 @@ type DrawingCanvasProps = {
   brushSize: number;
   isDrawn: boolean;
   setIsDrawn?: (isDrawn: boolean) => void;
+  className?: string;
 };
 
 export const CANVAS_BACKGROUND = "#FFFDF7";
@@ -20,6 +22,7 @@ const DrawingCanvas = ({
   brushSize,
   isDrawn,
   setIsDrawn,
+  className,
 }: DrawingCanvasProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const drawingRef = useRef(false);
@@ -179,7 +182,10 @@ const DrawingCanvas = ({
   return (
     <div
       ref={containerRef}
-      className="relative h-[clamp(320px,52svh,520px)] overflow-hidden rounded-[1.25rem] border-[3px] border-[#23244d] bg-[#fffdf7] shadow-[inset_0_0_0_4px_rgba(255,209,102,0.38),0_10px_0_rgba(35,36,77,0.10)] touch-none sm:aspect-[4/3] sm:h-auto sm:min-h-[360px] sm:rounded-[1.6rem] sm:border-4 sm:shadow-[inset_0_0_0_6px_rgba(255,209,102,0.45),0_14px_0_rgba(35,36,77,0.10)] lg:h-[360px] lg:aspect-auto"
+      className={cn(
+        "relative min-h-[260px] overflow-hidden rounded-[1.15rem] border-[3px] border-[#23244d] bg-[#fffdf7] shadow-[inset_0_0_0_4px_rgba(255,209,102,0.38),0_10px_0_rgba(35,36,77,0.10)] touch-none sm:aspect-[4/3] sm:h-auto sm:min-h-[360px] sm:rounded-[1.6rem] sm:border-4 sm:shadow-[inset_0_0_0_6px_rgba(255,209,102,0.45),0_14px_0_rgba(35,36,77,0.10)] lg:h-[360px] lg:aspect-auto",
+        className,
+      )}
     >
       <canvas
         ref={canvasRef}
