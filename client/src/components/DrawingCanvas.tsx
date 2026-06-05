@@ -23,7 +23,12 @@ const DrawingCanvas = ({
 }: DrawingCanvasProps) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const drawingRef = useRef(false);
+  const isDrawnRef = useRef(isDrawn);
   const lastPositionRef = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    isDrawnRef.current = isDrawn;
+  }, [isDrawn]);
 
   useEffect(() => {
     const resizeCanvas = () => {
@@ -32,6 +37,13 @@ const DrawingCanvas = ({
       const canvas = canvasRef.current;
       const context = canvas.getContext("2d");
       if (!context) return;
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+      const nextWidth = Math.max(1, Math.round(containerRef.current.clientWidth * pixelRatio));
+      const nextHeight = Math.max(1, Math.round(containerRef.current.clientHeight * pixelRatio));
+
+      if (canvas.width === nextWidth && canvas.height === nextHeight) {
+        return;
+      }
 
       const tempCanvas = document.createElement("canvas");
       const tempContext = tempCanvas.getContext("2d");
@@ -43,24 +55,28 @@ const DrawingCanvas = ({
         tempContext.drawImage(canvas, 0, 0);
       }
 
-      canvas.width = containerRef.current.clientWidth;
-      canvas.height = containerRef.current.clientHeight;
+      canvas.width = nextWidth;
+      canvas.height = nextHeight;
 
       context.fillStyle = CANVAS_BACKGROUND;
       context.fillRect(0, 0, canvas.width, canvas.height);
 
-      if (tempContext && hadContent && isDrawn) {
+      if (tempContext && hadContent && isDrawnRef.current) {
         context.drawImage(tempCanvas, 0, 0, canvas.width, canvas.height);
       }
     };
 
     resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
+    const resizeObserver = new ResizeObserver(resizeCanvas);
+
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current);
+    }
 
     return () => {
-      window.removeEventListener("resize", resizeCanvas);
+      resizeObserver.disconnect();
     };
-  }, [canvasRef, isDrawn]);
+  }, [canvasRef]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
@@ -76,14 +92,15 @@ const DrawingCanvas = ({
         : event;
 
       return {
-        x: point.clientX - rect.left,
-        y: point.clientY - rect.top,
+        x: (point.clientX - rect.left) * (canvas.width / rect.width),
+        y: (point.clientY - rect.top) * (canvas.height / rect.height),
       };
     };
 
     const fillCanvas = () => {
       context.fillStyle = currentColor;
       context.fillRect(0, 0, canvas.width, canvas.height);
+      isDrawnRef.current = true;
       setIsDrawn?.(true);
     };
 
@@ -106,7 +123,7 @@ const DrawingCanvas = ({
 
       context.lineJoin = "round";
       context.lineCap = "round";
-      context.lineWidth = brushSize;
+      context.lineWidth = brushSize * (canvas.width / rect.width);
       context.strokeStyle = currentTool === "eraser" ? CANVAS_BACKGROUND : currentColor;
 
       context.beginPath();
@@ -115,6 +132,7 @@ const DrawingCanvas = ({
       context.stroke();
 
       lastPositionRef.current = { x, y };
+      isDrawnRef.current = true;
       setIsDrawn?.(true);
     };
 
@@ -156,7 +174,7 @@ const DrawingCanvas = ({
   return (
     <div
       ref={containerRef}
-      className="relative min-h-[280px] lg:h-[360px] overflow-hidden rounded-[1.6rem] border-4 border-[#23244d] bg-[#fffdf7] shadow-[inset_0_0_0_6px_rgba(255,209,102,0.45),0_14px_0_rgba(35,36,77,0.10)] touch-none aspect-[1/1] sm:aspect-[4/3] lg:aspect-auto"
+      className="relative h-[clamp(320px,52svh,520px)] overflow-hidden rounded-[1.25rem] border-[3px] border-[#23244d] bg-[#fffdf7] shadow-[inset_0_0_0_4px_rgba(255,209,102,0.38),0_10px_0_rgba(35,36,77,0.10)] touch-none sm:aspect-[4/3] sm:h-auto sm:min-h-[360px] sm:rounded-[1.6rem] sm:border-4 sm:shadow-[inset_0_0_0_6px_rgba(255,209,102,0.45),0_14px_0_rgba(35,36,77,0.10)] lg:h-[360px] lg:aspect-auto"
     >
       <canvas
         ref={canvasRef}

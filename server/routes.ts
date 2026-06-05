@@ -22,6 +22,10 @@ function createGalleryItem(objectType: string, imageUrl: string): GalleryItem {
   };
 }
 
+function getOpenRouterSetupMessage(error: Error): string {
+  return `${error.message}. Add OPENROUTER_API_KEY, or set the specific OPENROUTER_CHAT_API_KEY and OPENROUTER_IMAGE_API_KEY values in your server environment.`;
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // GET all gallery items
   app.get('/api/gallery', (req, res) => {
@@ -67,8 +71,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       if (isOpenRouterConfigError(error)) {
-        return res.status(500).json({
-          message: error.message
+        return res.status(503).json({
+          message: getOpenRouterSetupMessage(error)
         });
       }
 
@@ -113,8 +117,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       if (isOpenRouterConfigError(error)) {
-        return res.status(500).json({
-          message: error.message
+        return res.status(503).json({
+          message: getOpenRouterSetupMessage(error)
         });
       }
       
