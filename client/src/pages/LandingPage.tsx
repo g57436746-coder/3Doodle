@@ -6,6 +6,7 @@ import {
   Images,
   Palette,
   Sparkles,
+  Star,
   Volume2,
   WandSparkles,
 } from "lucide-react";
@@ -37,23 +38,23 @@ const LandingPage = () => {
 
   return (
     <main className="min-h-screen bg-[#bdf4ff] text-[#23244d] studio-pattern flex flex-col">
-      
-      <section className="relative w-full max-w-[1400px] mx-auto px-4 py-10 sm:px-6 lg:px-10 lg:py-14 flex-1 flex items-center">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-14 items-center w-full z-10">
-          
+
+      <section className="relative w-full max-w-[1400px] mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-10 lg:py-12 flex-1 flex items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center w-full z-10">
+
           {/* Left Column: Hero Text & Feature Cards */}
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55 }}
-            className="space-y-6 flex flex-col justify-center"
+            className="space-y-5 flex flex-col justify-center"
           >
             <div className="w-fit inline-flex items-center gap-2 rounded-full border-4 border-white bg-[#fffdf7] px-4 py-2 font-nunito text-sm font-extrabold text-[#23244d] shadow-[0_8px_0_rgba(35,36,77,0.1)]">
               <Sparkles className="h-4 w-4 text-[#ff477e]" aria-hidden="true" />
               Toy studio for big ideas
             </div>
-            
-            <div className="space-y-4">
+
+            <div className="space-y-3">
               <h1 className="font-nunito text-[clamp(2.8rem,7vw,5.5rem)] font-black leading-[0.9] tracking-normal text-[#23244d] drop-shadow-[0_4px_0_rgba(255,255,255,0.9)]">
                 3Doodle
               </h1>
@@ -61,8 +62,8 @@ const LandingPage = () => {
                 A colorful drawing studio where kids sketch, chat for ideas, and make a 3D-style gallery from their doodles.
               </p>
             </div>
-            
-            <div className="flex flex-col gap-3 sm:flex-row pt-2">
+
+            <div className="flex flex-col gap-3 sm:flex-row">
               <motion.button
                 whileHover={{ y: -3 }}
                 whileTap={{ scale: 0.98 }}
@@ -83,7 +84,7 @@ const LandingPage = () => {
             </div>
 
             {/* Feature Cards Grid */}
-            <div className="grid gap-3 pt-4 grid-cols-1 sm:grid-cols-3">
+            <div className="grid gap-3 pt-2 grid-cols-1 sm:grid-cols-3">
               {featureTiles.map((feature, index) => {
                 const Icon = feature.icon;
                 return (
@@ -104,37 +105,62 @@ const LandingPage = () => {
               })}
             </div>
           </motion.div>
-          
-          {/* Right Column: Hero Illustration in a toy whiteboard frame */}
+
+          {/* Right Column: Hero Illustration with toy whiteboard frame & effects */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.92 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex items-center justify-center relative"
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="flex items-center justify-center relative p-6 lg:p-8"
           >
-            {/* Whiteboard/Canvas Toy Frame */}
-            <div className="w-full max-w-[520px] mx-auto rounded-[2rem] border-[10px] border-white bg-white shadow-[0_20px_40px_rgba(24,31,76,0.14)] overflow-hidden relative rotate-[2deg] hover:rotate-0 transition-transform duration-300">
-              <img
-                src={doodleHero}
-                alt="Children drawing colorful 3Doodle art"
-                className="w-full h-auto block select-none pointer-events-none"
-              />
-              {/* Toy label/badge inside the whiteboard frame */}
-              <div className="absolute top-3 right-3 bg-[#fff3b0] text-[#ff477e] border-2 border-white px-3 py-1.5 rounded-full font-nunito text-xs font-black rotate-[6deg] shadow-md flex items-center gap-1">
-                <Images className="h-3.5 w-3.5" />
-                Gallery ready!
+            {/* Colorful glow behind the frame */}
+            <div className="absolute inset-4 rounded-[2.5rem] bg-gradient-to-br from-[#ff477e]/25 via-[#ffd166]/20 to-[#14b8c4]/25 blur-2xl" aria-hidden="true" />
+
+            {/* Main whiteboard frame */}
+            <motion.div
+              animate={{ y: [0, -8, 0] }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="relative w-full max-w-[500px] mx-auto"
+            >
+              {/* Outer colored border ring */}
+              <div className="rounded-[2.2rem] bg-gradient-to-br from-[#ff477e] via-[#ffd166] to-[#14b8c4] p-[5px] shadow-[0_16px_48px_rgba(255,71,126,0.22),0_8px_24px_rgba(20,184,196,0.18)]">
+                {/* White frame */}
+                <div className="rounded-[2rem] border-[8px] border-white bg-white overflow-hidden shadow-[inset_0_2px_8px_rgba(35,36,77,0.08)]">
+                  <img
+                    src={doodleHero}
+                    alt="Children drawing colorful 3Doodle art"
+                    className="w-full h-auto block select-none pointer-events-none"
+                  />
+                </div>
               </div>
-            </div>
-            
-            {/* Sparkle decoration */}
-            <div className="absolute -top-4 left-8 text-[#ff477e] animate-bounce select-none pointer-events-none hidden lg:block">
-              <Sparkles className="h-7 w-7" />
-            </div>
+
+              {/* Gallery ready badge — anchored top-right of frame */}
+              <motion.div
+                initial={{ rotate: 0 }}
+                animate={{ rotate: [0, 3, -2, 3, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute -top-3 -right-3 bg-[#fff3b0] text-[#ff477e] border-[3px] border-white px-3.5 py-2 rounded-2xl font-nunito text-xs font-black shadow-[0_6px_0_rgba(35,36,77,0.1)] flex items-center gap-1.5 z-10"
+              >
+                <Images className="h-4 w-4" />
+                Gallery ready!
+              </motion.div>
+
+              {/* Sparkle decorations */}
+              <div className="absolute -top-5 -left-3 text-[#ff477e] animate-bounce select-none pointer-events-none">
+                <Sparkles className="h-7 w-7 drop-shadow-[0_2px_4px_rgba(255,71,126,0.4)]" />
+              </div>
+              <div className="absolute -bottom-4 -right-5 text-[#ffd166] animate-pulse select-none pointer-events-none">
+                <Star className="h-6 w-6 fill-[#ffd166] drop-shadow-[0_2px_4px_rgba(255,209,102,0.5)]" />
+              </div>
+              <div className="absolute top-1/2 -left-5 text-[#14b8c4] animate-ping select-none pointer-events-none opacity-60">
+                <Sparkles className="h-4 w-4" />
+              </div>
+            </motion.div>
           </motion.div>
 
         </div>
       </section>
-      
+
       {/* Playful color stripe footer */}
       <footer className="w-full shrink-0 overflow-hidden">
         <div className="h-3 bg-[#15b8c6]" />
@@ -146,3 +172,4 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+

@@ -105,7 +105,7 @@ const DrawingApp = () => {
         title: "Generation failed",
         description: error instanceof Error
           ? error.message
-          : "Could not transform your drawing. Please try again!",
+          : "Generation failed. Check the server response for details.",
         variant: "destructive",
       });
     } finally {
