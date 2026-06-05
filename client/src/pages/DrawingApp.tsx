@@ -378,7 +378,7 @@ const DrawingApp = () => {
           </aside>
         </section>
 
-        <section className="grid gap-5 lg:hidden">
+        <section className="mt-[calc(var(--mobile-toolbar-height)+1rem)] grid gap-5 lg:hidden">
           <ChatPanel onGalleryItemCreated={handleChatGeneratedItem} />
         </section>
 
