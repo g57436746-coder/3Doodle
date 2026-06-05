@@ -268,9 +268,25 @@ export async function detectObjectInDrawing(imageData: string): Promise<string> 
   }
 }
 
-export async function generate3DModel(objectType: string): Promise<string> {
+export async function generate3DModel(objectType: string, sourceImageData?: string): Promise<string> {
   const cleanObjectType = sanitizeObjectType(objectType);
-  const prompt = `Create a photorealistic 3D model of a ${cleanObjectType} for a child-friendly drawing app. Center the object on a clean white studio background with soft lighting, smooth rounded materials, vibrant colors, and a gentle cartoon charm. Make the ${cleanObjectType} clear and recognizable as the only main subject.`;
+  const prompt = sourceImageData
+    ? `Use the attached child's sketch as the source image. Infer the main object from the black line drawing, then transform it into a polished, recognizable 3D toy-like object for a child-friendly drawing app. Preserve the sketch's core shape and composition, but make the result clean, centered, colorful, rounded, and easy to recognize on a plain white studio background. Do not include hands, pencils, text, UI, or extra objects.`
+    : `Create a photorealistic 3D model of a ${cleanObjectType} for a child-friendly drawing app. Center the object on a clean white studio background with soft lighting, smooth rounded materials, vibrant colors, and a gentle cartoon charm. Make the ${cleanObjectType} clear and recognizable as the only main subject.`;
+  const content = sourceImageData
+    ? [
+        {
+          type: "text",
+          text: prompt,
+        },
+        {
+          type: "image_url",
+          image_url: {
+            url: sourceImageData,
+          },
+        },
+      ]
+    : prompt;
 
   try {
     const result = await postOpenRouterChatCompletion(
@@ -279,7 +295,7 @@ export async function generate3DModel(objectType: string): Promise<string> {
         messages: [
           {
             role: "user",
-            content: prompt,
+            content,
           },
         ],
         modalities: ["image"],
@@ -289,7 +305,9 @@ export async function generate3DModel(objectType: string): Promise<string> {
           background_mode: "solid",
           background_hex_color: "#ffffff",
           scoring_prompt:
-            "Prefer a single clean object, strong silhouette, kid-friendly materials, crisp edges, and even studio lighting.",
+            sourceImageData
+              ? "Prefer faithful sketch interpretation, a single clean 3D object, strong silhouette, kid-friendly materials, crisp edges, and even studio lighting."
+              : "Prefer a single clean object, strong silhouette, kid-friendly materials, crisp edges, and even studio lighting.",
         },
         stream: false,
       },

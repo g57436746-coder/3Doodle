@@ -5,7 +5,6 @@ import { chatRequestSchema, generateImageSchema, GalleryItem } from '@shared/sch
 import { nanoid } from 'nanoid';
 import {
   chatWithOpenRouter,
-  detectObjectInDrawing,
   generate3DModel,
   getRequestedImageObject,
   isOpenRouterConfigError,
@@ -88,16 +87,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Extract the base64 image data
       const imageData = validatedData.imageData;
       
-      // Log processing start
-      console.log('Processing drawing to detect object...');
-      
-      // Detect object type from the sketch using OpenRouter
-      const objectType = await detectObjectInDrawing(imageData);
-      console.log(`Detected object type: ${objectType}`);
-      
-      // Generate 3D image using Sourceful Riverflow through OpenRouter
-      console.log(`Generating 3D model for: ${objectType}`);
-      const imageUrl = await generate3DModel(objectType);
+      const objectType = "doodle";
+
+      console.log('Generating 3D model from drawing with Sourceful Riverflow...');
+      const imageUrl = await generate3DModel(objectType, imageData);
       
       // Create gallery item
       const newItem = createGalleryItem(objectType, imageUrl);

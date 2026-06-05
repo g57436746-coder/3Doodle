@@ -22,6 +22,7 @@ import ChatPanel from "@/components/ChatPanel";
 import { useDrawing } from "@/hooks/useDrawing";
 import { apiRequest } from "@/lib/queryClient";
 import { cn } from "@/lib/utils";
+import { compressImage } from "@/lib/imageUtils";
 import type { GalleryItem } from "@shared/schema";
 
 const drawingIdeas = ["Apple", "Cat", "Rocket", "Flower", "House", "Dog", "Sun", "Tree"];
@@ -64,7 +65,7 @@ const DrawingApp = () => {
     try {
       setIsProcessing(true);
 
-      const imageData = getCanvasImage();
+      const imageData = await compressImage(getCanvasImage(), 1024, 1024, 0.9);
       const response = await apiRequest("POST", "/api/generate", {
         imageData,
       });
@@ -84,7 +85,9 @@ const DrawingApp = () => {
       console.error("Error generating image:", error);
       toast({
         title: "Generation failed",
-        description: "Could not transform your drawing. Please try again!",
+        description: error instanceof Error
+          ? error.message
+          : "Could not transform your drawing. Please try again!",
         variant: "destructive",
       });
     } finally {
