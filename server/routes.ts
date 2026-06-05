@@ -26,6 +26,10 @@ function getOpenRouterSetupMessage(error: Error): string {
   return `${error.message}. Add OPENROUTER_API_KEY, or set the specific OPENROUTER_CHAT_API_KEY and OPENROUTER_IMAGE_API_KEY values in your server environment.`;
 }
 
+function getErrorMessage(error: unknown, fallback: string): string {
+  return error instanceof Error && error.message.trim() ? error.message : fallback;
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // GET all gallery items
   app.get('/api/gallery', (req, res) => {
@@ -76,8 +80,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      res.status(500).json({
-        message: 'Failed to send chat message. Please try again.'
+      res.status(502).json({
+        message: getErrorMessage(error, 'Failed to send chat message. Please try again.')
       });
     }
   });
@@ -122,8 +126,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      res.status(500).json({ 
-        message: 'Failed to generate 3D image. Please try again.' 
+      res.status(502).json({
+        message: getErrorMessage(error, 'Failed to generate 3D image. Please try again.')
       });
     }
   });

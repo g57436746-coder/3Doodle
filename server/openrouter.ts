@@ -105,22 +105,6 @@ function getFallbackObject(): string {
   return fallbackObjects[Math.floor(Math.random() * fallbackObjects.length)] ?? "object";
 }
 
-function createFallbackImage(objectType: string): string {
-  const label = sanitizeObjectType(objectType);
-  const svg = `
-<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
-  <rect width="1024" height="1024" fill="#fff7ed"/>
-  <ellipse cx="512" cy="600" rx="260" ry="90" fill="#fed7aa"/>
-  <circle cx="512" cy="430" r="190" fill="#a7f3d0"/>
-  <circle cx="445" cy="380" r="34" fill="#2563eb"/>
-  <circle cx="579" cy="380" r="34" fill="#2563eb"/>
-  <path d="M425 500 Q512 565 599 500" fill="none" stroke="#334155" stroke-width="28" stroke-linecap="round"/>
-  <text x="512" y="820" text-anchor="middle" font-family="Arial, sans-serif" font-size="64" font-weight="700" fill="#334155">3D ${label}</text>
-</svg>`;
-
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
-}
-
 function getHeaders(apiKey: string): HeadersInit {
   return {
     Authorization: `Bearer ${apiKey}`,
@@ -327,7 +311,7 @@ export async function generate3DModel(objectType: string, sourceImageData?: stri
     }
 
     console.error("Error generating 3D model with OpenRouter:", error);
-    return createFallbackImage(cleanObjectType);
+    throw new Error(error instanceof Error ? error.message : "Riverflow generation failed");
   }
 }
 
