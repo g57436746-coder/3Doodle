@@ -1,116 +1,120 @@
 import { useLocation } from "wouter";
 import { motion } from "framer-motion";
+import {
+  ArrowRight,
+  Brush,
+  Images,
+  Palette,
+  Sparkles,
+  Volume2,
+  WandSparkles,
+} from "lucide-react";
+import doodleHero from "../../../attached_assets/doodling.png";
+
+const featureTiles = [
+  {
+    icon: Brush,
+    title: "Draw",
+    text: "Big tools, bold colors, and a canvas that feels ready for little hands.",
+    color: "bg-[#14b8c4]",
+  },
+  {
+    icon: WandSparkles,
+    title: "Transform",
+    text: "Turn simple sketches into playful 3D-style creations.",
+    color: "bg-[#ff477e]",
+  },
+  {
+    icon: Volume2,
+    title: "Play",
+    text: "Save creations in the gallery and tap them for fun sounds.",
+    color: "bg-[#8ac926]",
+  },
+];
 
 const LandingPage = () => {
-  const [_, navigate] = useLocation();
+  const [, navigate] = useLocation();
 
   return (
-    <div className="relative overflow-hidden min-h-screen">
-      {/* Decorative background elements */}
-      <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1513002749550-c59d786b8e6c?ixlib=rb-1.2.1&auto=format&fit=crop&w=1200&q=80')] bg-cover opacity-10 filter blur-5 -z-10"></div>
-      <div className="absolute top-0 right-0 h-96 w-96 bg-primary-light rounded-full filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/2"></div>
-      <div className="absolute bottom-0 left-0 h-96 w-96 bg-pink-200 rounded-full filter blur-3xl opacity-20 translate-y-1/2 -translate-x-1/2"></div>
-      
-      {/* Main Content */}
-      <div className="container mx-auto px-4 py-8 relative z-10">
-        <div className="flex flex-col items-center justify-center min-h-screen py-12">
-          <div className="text-center mb-8">
-            <motion.h1 
-              className="font-nunito font-extrabold text-4xl md:text-5xl lg:text-6xl text-primary-600 mb-2 drop-shadow-md"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              Welcome to 3Doodle
-            </motion.h1>
-            <motion.h2 
-              className="font-nunito font-bold text-3xl md:text-4xl text-pink-500 mb-6 drop-shadow-sm"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-            >
-              Where Your Doodles Come to Life!
-            </motion.h2>
-            <motion.p 
-              className="text-lg md:text-xl text-gray-600 max-w-xl mx-auto mb-8"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.6, delay: 0.4 }}
-            >
-              Draw, Create, Transform - Your Imagination in 3D!
-            </motion.p>
-          </div>
-          
-          <motion.div 
-            className="max-w-4xl mx-auto mb-8 bg-white bg-opacity-80 rounded-xl p-4 shadow-xl overflow-hidden relative"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.6 }}
-          >
-            <img 
-              src="https://images.unsplash.com/photo-1679643256705-6cc33fd4cb67?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" 
-              alt="Children creating digital art" 
-              className="w-full h-auto rounded-lg" 
-            />
-          </motion.div>
-          
-          <motion.div 
-            className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto mb-12"
-            initial={{ opacity: 0, y: 20 }}
+    <main className="min-h-screen overflow-hidden bg-[#bdf4ff] text-[#23244d] studio-pattern">
+      <section className="relative flex min-h-[92svh] items-center px-4 py-6 sm:px-6 lg:px-10">
+        <img
+          src={doodleHero}
+          alt="Children drawing colorful 3Doodle art"
+          className="pointer-events-none absolute bottom-[-7rem] right-[-14rem] h-[70svh] min-h-[520px] max-w-none select-none object-cover object-[50%_62%] opacity-80 sm:right-[-9rem] sm:h-[78svh] lg:right-[-3rem] lg:h-[86svh] xl:right-8"
+        />
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-[#fff7d7]" aria-hidden="true" />
+        <div className="absolute bottom-10 left-0 right-0 h-8 bg-[#15b8c6]" aria-hidden="true" />
+        <div className="absolute bottom-0 left-0 right-0 h-10 bg-[#ffcf33]" aria-hidden="true" />
+
+        <div className="relative z-10 mx-auto flex w-full max-w-7xl flex-col justify-center gap-10">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.8 }}
+            transition={{ duration: 0.55 }}
+            className="max-w-2xl pt-8 sm:pt-0"
           >
-            <div className="bg-white bg-opacity-90 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center">
-              <div className="text-primary-600 text-4xl mb-4">
-                <i className="ri-pencil-line"></i>
-              </div>
-              <h3 className="font-nunito font-bold text-xl mb-2">Draw</h3>
-              <p className="text-gray-600">Create simple sketches using our kid-friendly drawing tools</p>
+            <div className="mb-5 inline-flex items-center gap-2 rounded-full border-4 border-white bg-[#fffdf7] px-4 py-2 font-nunito text-sm font-extrabold text-[#23244d] shadow-[0_8px_0_rgba(35,36,77,0.14)]">
+              <Sparkles className="h-4 w-4 text-[#ff477e]" aria-hidden="true" />
+              Toy studio for big ideas
             </div>
-            
-            <div className="bg-white bg-opacity-90 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center">
-              <div className="text-pink-500 text-4xl mb-4">
-                <i className="ri-magic-line"></i>
-              </div>
-              <h3 className="font-nunito font-bold text-xl mb-2">Transform</h3>
-              <p className="text-gray-600">Watch as our AI magic turns your doodles into amazing 3D models</p>
-            </div>
-            
-            <div className="bg-white bg-opacity-90 rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 flex flex-col items-center text-center">
-              <div className="text-green-500 text-4xl mb-4">
-                <i className="ri-volume-up-line"></i>
-              </div>
-              <h3 className="font-nunito font-bold text-xl mb-2">Play</h3>
-              <p className="text-gray-600">Hear your creations come to life with fun, object-related sounds</p>
+            <h1 className="font-nunito text-[clamp(3.4rem,10vw,8.5rem)] font-black leading-[0.85] tracking-normal text-[#23244d] drop-shadow-[0_6px_0_rgba(255,255,255,0.9)]">
+              3Doodle
+            </h1>
+            <p className="mt-5 max-w-xl font-quicksand text-xl font-bold leading-relaxed text-[#33406f] sm:text-2xl">
+              A colorful drawing studio where kids sketch, chat for ideas, and make a 3D-style gallery from their doodles.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <motion.button
+                whileHover={{ y: -3 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => navigate("/draw")}
+                className="toy-button bg-[#ff477e] text-lg text-white"
+              >
+                Start doodling
+                <ArrowRight className="h-5 w-5" aria-hidden="true" />
+              </motion.button>
+              <button
+                onClick={() => navigate("/draw")}
+                className="toy-button bg-[#fffdf7] text-[#23244d]"
+              >
+                <Palette className="h-5 w-5 text-[#14b8c4]" aria-hidden="true" />
+                Open studio
+              </button>
             </div>
           </motion.div>
-          
-          <motion.button 
-            className="bg-primary-600 hover:bg-primary-500 text-white font-nunito font-bold text-xl py-4 px-10 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 animate-pulse"
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={() => navigate('/draw')}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1 }}
-          >
-            Start Doodling!
-          </motion.button>
-          
-          <motion.div 
-            className="flex gap-6 mt-12"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 1.2 }}
-          >
-            <a href="#" className="text-primary-600 hover:text-primary-500 transition-colors">How It Works</a>
-            <a href="#" className="text-primary-600 hover:text-primary-500 transition-colors">Gallery</a>
-            <a href="#" className="text-primary-600 hover:text-primary-500 transition-colors">About</a>
-            <a href="#" className="text-primary-600 hover:text-primary-500 transition-colors">Contact</a>
-          </motion.div>
+
+          <div className="relative z-10 grid max-w-4xl gap-3 pb-20 sm:grid-cols-3 lg:pb-2">
+            {featureTiles.map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <motion.article
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 18 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5, delay: 0.15 + index * 0.08 }}
+                  className="rounded-[1.5rem] border-4 border-white bg-[#fffdf7] p-4 shadow-[0_10px_0_rgba(35,36,77,0.12)]"
+                >
+                  <div className={`mb-3 flex h-12 w-12 items-center justify-center rounded-2xl ${feature.color} text-white shadow-[0_5px_0_rgba(35,36,77,0.16)]`}>
+                    <Icon className="h-6 w-6" aria-hidden="true" />
+                  </div>
+                  <h2 className="font-nunito text-xl font-black text-[#23244d]">{feature.title}</h2>
+                  <p className="mt-1 text-sm font-semibold leading-relaxed text-[#52607e]">{feature.text}</p>
+                </motion.article>
+              );
+            })}
+          </div>
         </div>
-      </div>
-    </div>
+
+        <div
+          className="absolute bottom-14 right-3 z-10 hidden rotate-[-7deg] items-center gap-2 rounded-[1.25rem] border-4 border-white bg-[#fffdf7] px-4 py-3 font-nunito font-black text-[#23244d] shadow-[0_8px_0_rgba(35,36,77,0.12)] md:flex"
+          aria-hidden="true"
+        >
+          <Images className="h-5 w-5 text-[#ff477e]" />
+          Gallery ready
+        </div>
+      </section>
+    </main>
   );
 };
 

@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
+import { CANVAS_BACKGROUND } from '@/components/DrawingCanvas';
 
 export const useDrawing = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -16,7 +17,7 @@ export const useDrawing = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
     
-    ctx.fillStyle = '#f8fafc';
+    ctx.fillStyle = CANVAS_BACKGROUND;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     setIsDrawn(false);
   };

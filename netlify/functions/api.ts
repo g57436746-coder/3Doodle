@@ -10,10 +10,12 @@ export const handler = async (event: any, context: any) => {
     app.use(express.json());
     app.use(express.urlencoded({ extended: false }));
 
-    // Rewrite path mapping: /.netlify/functions/api/foo -> /api/foo
+    // Rewrite path mapping: handle both prefixed and prefix-stripped Netlify function paths
     app.use((req, res, next) => {
       if (req.url.startsWith("/.netlify/functions/api")) {
         req.url = req.url.replace("/.netlify/functions/api", "/api");
+      } else if (!req.url.startsWith("/api")) {
+        req.url = `/api${req.url}`;
       }
       next();
     });

@@ -1,18 +1,23 @@
-import { FormEvent, KeyboardEvent, useMemo, useRef, useState } from 'react';
-import { Loader2, Send, Sparkles } from 'lucide-react';
-import { apiRequest } from '@/lib/queryClient';
-import type { ChatMessage } from '../../../shared/schema';
+import { FormEvent, KeyboardEvent, useMemo, useRef, useState } from "react";
+import { Loader2, Send, Sparkles } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
+import { cn } from "@/lib/utils";
+import type { ChatMessage } from "@shared/schema";
+
+type ChatPanelProps = {
+  className?: string;
+};
 
 const initialMessages: ChatMessage[] = [
   {
-    role: 'assistant',
-    content: 'Hi! I can help you pick a fun doodle and make it easier to draw.',
+    role: "assistant",
+    content: "Hi! Tell me what you like, and I can suggest a fun doodle to draw.",
   },
 ];
 
-const ChatPanel = () => {
+const ChatPanel = ({ className }: ChatPanelProps) => {
   const [messages, setMessages] = useState<ChatMessage[]>(initialMessages);
-  const [draft, setDraft] = useState('');
+  const [draft, setDraft] = useState("");
   const [isSending, setIsSending] = useState(false);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -29,17 +34,17 @@ const ChatPanel = () => {
     }
 
     const userMessage: ChatMessage = {
-      role: 'user',
+      role: "user",
       content,
     };
     const nextMessages = [...requestMessages, userMessage];
 
     setMessages(nextMessages);
-    setDraft('');
+    setDraft("");
     setIsSending(true);
 
     try {
-      const response = await apiRequest('POST', '/api/chat', {
+      const response = await apiRequest("POST", "/api/chat", {
         messages: nextMessages,
       });
       const result = await response.json();
@@ -47,12 +52,12 @@ const ChatPanel = () => {
 
       setMessages((currentMessages) => [...currentMessages, assistantMessage]);
     } catch (error) {
-      console.error('Error sending chat message:', error);
+      console.error("Error sending chat message:", error);
       setMessages((currentMessages) => [
         ...currentMessages,
         {
-          role: 'assistant',
-          content: "I couldn't answer that one. Try again in a moment.",
+          role: "assistant",
+          content: "I could not answer that one. Try again in a moment.",
         },
       ]);
     } finally {
@@ -67,39 +72,40 @@ const ChatPanel = () => {
   };
 
   const handleKeyDown = (event: KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
+    if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
       void sendMessage();
     }
   };
 
   return (
-    <section className="bg-white rounded-2xl shadow-lg p-4 flex min-h-[360px] flex-col">
-      <div className="mb-4 flex items-center justify-between">
-        <div className="flex items-center">
-          <div className="mr-2 flex h-9 w-9 items-center justify-center rounded-full bg-primary-100 text-primary-600">
-            <Sparkles className="h-4 w-4" aria-hidden="true" />
+    <section className={cn("toy-panel flex min-h-[340px] flex-col rounded-[1.75rem] p-4", className)}>
+      <div className="mb-4 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-[1.1rem] bg-[#8d5cf6] text-white shadow-[0_6px_0_rgba(35,36,77,0.15)]">
+            <Sparkles className="h-5 w-5" aria-hidden="true" />
           </div>
           <div>
-            <h2 className="font-nunito font-bold text-lg text-primary-600">Doodle Chat</h2>
-            <p className="text-xs text-gray-500">Ready for ideas</p>
+            <h2 className="font-nunito text-xl font-black text-[#23244d]">Doodle Chat</h2>
+            <p className="text-xs font-bold text-[#52607e]">Friendly ideas</p>
           </div>
         </div>
-        {isSending && <Loader2 className="h-4 w-4 animate-spin text-primary-500" aria-hidden="true" />}
+        {isSending && <Loader2 className="h-5 w-5 animate-spin text-[#ff477e]" aria-hidden="true" />}
       </div>
 
       <div className="flex-1 space-y-3 overflow-y-auto pr-1">
         {messages.map((message, index) => (
           <div
             key={`${message.role}-${index}`}
-            className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+            className={`flex ${message.role === "user" ? "justify-end" : "justify-start"}`}
           >
             <div
-              className={`max-w-[88%] rounded-2xl px-3 py-2 text-sm leading-relaxed ${
-                message.role === 'user'
-                  ? 'bg-primary-600 text-white'
-                  : 'bg-gray-100 text-gray-700'
-              }`}
+              className={cn(
+                "max-w-[88%] rounded-[1.2rem] px-4 py-3 text-sm font-semibold leading-relaxed shadow-[0_4px_0_rgba(35,36,77,0.08)]",
+                message.role === "user"
+                  ? "bg-[#14b8c4] text-white"
+                  : "bg-[#fff3b0] text-[#23244d]",
+              )}
             >
               {message.content}
             </div>
@@ -114,21 +120,21 @@ const ChatPanel = () => {
           onChange={(event) => setDraft(event.target.value)}
           onKeyDown={handleKeyDown}
           rows={2}
-          className="min-h-[44px] flex-1 resize-none rounded-2xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 outline-none transition-colors placeholder:text-gray-400 focus:border-primary-300 focus:bg-white"
+          className="min-h-[52px] flex-1 resize-none rounded-[1.2rem] border-4 border-[#d9e3f5] bg-[#fffdf7] px-4 py-3 text-sm font-bold text-[#23244d] outline-none transition placeholder:text-[#7a859f] focus:border-[#14b8c4]"
           placeholder="Ask for an idea..."
           disabled={isSending}
         />
         <button
           type="submit"
           disabled={isSending || !draft.trim()}
-          className="flex h-11 w-11 items-center justify-center rounded-full bg-primary-600 text-white shadow-md transition-colors hover:bg-primary-500 disabled:cursor-not-allowed disabled:bg-gray-300"
+          className="toy-icon-button h-[52px] w-[52px] bg-[#ff477e] text-white hover:bg-[#e63b70] disabled:cursor-not-allowed disabled:bg-[#cbd5e1]"
           aria-label="Send message"
           title="Send message"
         >
           {isSending ? (
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            <Loader2 className="h-5 w-5 animate-spin" aria-hidden="true" />
           ) : (
-            <Send className="h-4 w-4" aria-hidden="true" />
+            <Send className="h-5 w-5" aria-hidden="true" />
           )}
         </button>
       </form>
